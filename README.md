@@ -16,7 +16,7 @@
 docker compose up -d --build
 ```
 
-- Фронтенд: http://localhost:8080 (`/api/*` проксируется на бэкенд)
+- Фронтенд: http://localhost:8081 (`/api/*` проксируется на бэкенд)
 - Бэкенд: http://localhost:3000
 - PostgreSQL: localhost:5433
 
