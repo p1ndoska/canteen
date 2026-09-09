@@ -10,9 +10,21 @@
 
 ## Запуск
 
+### Всё в Docker
+
+```bash
+docker compose up -d --build
+```
+
+- Фронтенд: http://localhost:8080 (`/api/*` проксируется на бэкенд)
+- Бэкенд: http://localhost:3000
+- PostgreSQL: localhost:5433
+
+### Локально (без Docker для кода)
+
 ```bash
 # 1. База данных (PostgreSQL на localhost:5433)
-docker compose up -d
+docker compose up -d db
 
 # 2. Бэкенд (http://localhost:3000)
 cd backend
