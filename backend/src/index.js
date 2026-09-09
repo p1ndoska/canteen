@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 const pool = new Pool({
   connectionString:
     process.env.DATABASE_URL ||
-    'postgres://postgres:postgres@localhost:5432/canteen',
+    'postgres://postgres:postgres@localhost:5433/canteen',
 });
 
 app.use(cors());

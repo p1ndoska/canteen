@@ -11,7 +11,7 @@
 ## Запуск
 
 ```bash
-# 1. База данных
+# 1. База данных (PostgreSQL на localhost:5433)
 docker compose up -d
 
 # 2. Бэкенд (http://localhost:3000)
