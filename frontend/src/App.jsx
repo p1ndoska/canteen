@@ -1,7 +1,21 @@
 import { useState } from 'react'
 
+const inputClass =
+  'rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100'
+
+function Field({ label, ...props }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <input className={inputClass} {...props} />
+    </label>
+  )
+}
+
 function App() {
-  const [loginOpen, setLoginOpen] = useState(false)
+  const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
+
+  const close = () => setAuthMode(null)
 
   return (
     <>
@@ -32,7 +46,7 @@ function App() {
             </button>
             <button
               type="button"
-              onClick={() => setLoginOpen(true)}
+              onClick={() => setAuthMode('login')}
               className="inline-flex items-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-600 transition hover:brightness-95"
             >
               Войти
@@ -43,20 +57,22 @@ function App() {
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
       </main>
 
-      {loginOpen && (
+      {authMode && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-          onClick={() => setLoginOpen(false)}
+          onClick={close}
         >
           <div
             className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Вход</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {authMode === 'login' ? 'Вход' : 'Регистрация'}
+              </h2>
               <button
                 type="button"
-                onClick={() => setLoginOpen(false)}
+                onClick={close}
                 className="text-gray-400 transition hover:text-gray-600"
                 aria-label="Закрыть"
               >
@@ -72,35 +88,51 @@ function App() {
                 </svg>
               </button>
             </div>
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm font-medium text-gray-700">Логин</span>
-                <input
-                  type="text"
-                  name="login"
-                  autoComplete="username"
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm font-medium text-gray-700">Пароль</span>
-                <input
-                  type="password"
-                  name="password"
-                  autoComplete="current-password"
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
-                />
-              </label>
-              <button
-                type="submit"
-                className="mt-1 rounded-full bg-sky-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95"
+
+            {authMode === 'login' ? (
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={(e) => e.preventDefault()}
               >
-                Войти
-              </button>
-            </form>
+                <Field label="Логин" type="text" name="login" autoComplete="username" />
+                <Field label="Пароль" type="password" name="password" autoComplete="current-password" />
+                <button
+                  type="submit"
+                  className="mt-1 rounded-full bg-sky-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95"
+                >
+                  Войти
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('register')}
+                  className="text-sm text-sky-600 transition hover:text-sky-700"
+                >
+                  Нет аккаунта? Зарегистрироваться
+                </button>
+              </form>
+            ) : (
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <Field label="Логин" type="text" name="login" autoComplete="username" />
+                <Field label="Пароль" type="password" name="password" autoComplete="new-password" />
+                <Field label="Повторите пароль" type="password" name="passwordConfirm" autoComplete="new-password" />
+                <button
+                  type="submit"
+                  className="mt-1 rounded-full bg-sky-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95"
+                >
+                  Зарегистрироваться
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMode('login')}
+                  className="text-sm text-sky-600 transition hover:text-sky-700"
+                >
+                  Уже есть аккаунт? Войти
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
