@@ -12,9 +12,10 @@
   border-bottom: 1px solid #d1d5db;
 }
 
-.header .container {
+.header-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 56px;
 }
 
@@ -22,6 +23,45 @@
   font-weight: 600;
   font-size: 18px;
   color: #111827;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.btn:hover {
+  filter: brightness(0.95);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-cart {
+  background: #38bdf8;
+  color: #fff;
+}
+
+.btn-login {
+  background: #fff;
+  color: #0284c7;
+  border-color: #bae6fd;
 }
 
 .main {
