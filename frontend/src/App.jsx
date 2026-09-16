@@ -29,6 +29,7 @@ const emptyForm = { login: '', password: '', passwordConfirm: '' }
 
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
+  const [cartOpen, setCartOpen] = useState(false)
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user')
     return saved ? JSON.parse(saved) : null
@@ -89,6 +90,7 @@ function App() {
           <div className="flex items-center gap-2.5">
             <button
               type="button"
+              onClick={() => setCartOpen(true)}
               className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
             >
               <svg
@@ -131,6 +133,42 @@ function App() {
       </header>
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
       </main>
+
+      {cartOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40"
+          onClick={() => setCartOpen(false)}
+        >
+          <aside
+            className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+              <h2 className="text-lg font-semibold text-gray-900">Корзина</h2>
+              <button
+                type="button"
+                onClick={() => setCartOpen(false)}
+                className="text-gray-400 transition hover:text-gray-600"
+                aria-label="Закрыть"
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex flex-1 items-center justify-center p-6">
+              <p className="text-sm text-gray-500">Корзина пуста</p>
+            </div>
+          </aside>
+        </div>
+      )}
 
       {authMode && (
         <div
