@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const inputClass =
-  'rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100'
+  'rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-[#a2d9f7] focus:ring-2 focus:ring-[#a2d9f7]/40'
 
 function Field({ label, ...props }) {
   return (
@@ -89,7 +89,7 @@ function App() {
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-full border border-transparent bg-sky-400 px-4 py-2 text-sm font-semibold text-white transition hover:brightness-95"
+              className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
             >
               <svg
                 className="h-[18px] w-[18px]"
@@ -112,7 +112,7 @@ function App() {
                 <button
                   type="button"
                   onClick={logout}
-                  className="inline-flex items-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-600 transition hover:brightness-95"
+                  className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
                 >
                   Выйти
                 </button>
@@ -121,7 +121,7 @@ function App() {
               <button
                 type="button"
                 onClick={() => setAuthMode('login')}
-                className="inline-flex items-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-600 transition hover:brightness-95"
+                className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
               >
                 Войти
               </button>
@@ -195,7 +195,7 @@ function App() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-1 rounded-full bg-sky-400 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+                className="mt-1 rounded-full bg-[#a2d9f7] px-4 py-2.5 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95 disabled:opacity-60"
               >
                 {authMode === 'login' ? 'Войти' : 'Зарегистрироваться'}
               </button>
@@ -203,7 +203,7 @@ function App() {
                 <button
                   type="button"
                   onClick={() => { setAuthMode('register'); setError('') }}
-                  className="text-sm text-sky-600 transition hover:text-sky-700"
+                  className="text-sm text-[#0c4a6e] transition hover:brightness-75"
                 >
                   Нет аккаунта? Зарегистрироваться
                 </button>
@@ -211,7 +211,7 @@ function App() {
                 <button
                   type="button"
                   onClick={() => { setAuthMode('login'); setError('') }}
-                  className="text-sm text-sky-600 transition hover:text-sky-700"
+                  className="text-sm text-[#0c4a6e] transition hover:brightness-75"
                 >
                   Уже есть аккаунт? Войти
                 </button>
