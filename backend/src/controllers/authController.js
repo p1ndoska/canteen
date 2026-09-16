@@ -5,7 +5,9 @@ import { pool } from '../db.js';
 const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-me';
 
 const signToken = (user) =>
-  jwt.sign({ sub: user.id, login: user.login }, jwtSecret, { expiresIn: '7d' });
+  jwt.sign({ sub: user.id, login: user.login, role: user.role }, jwtSecret, {
+    expiresIn: '7d',
+  });
 
 export async function register(req, res) {
   const { login, password } = req.body ?? {};
@@ -17,7 +19,7 @@ export async function register(req, res) {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
-      'INSERT INTO users (login, password_hash) VALUES ($1, $2) RETURNING id, login',
+      'INSERT INTO users (login, password_hash) VALUES ($1, $2) RETURNING id, login, role',
       [login.trim(), passwordHash],
     );
     const user = rows[0];
@@ -31,6 +33,58 @@ export async function register(req, res) {
   }
 }
 
+export function requireRole(...roles) {
+  return (req, res, next) => {
+    const header = req.headers.authorization || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+    if (!token) {
+      return res.status(401).json({ error: 'Требуется авторизация' });
+    }
+    try {
+      const payload = jwt.verify(token, jwtSecret);
+      if (!roles.includes(payload.role)) {
+        return res.status(403).json({ error: 'Недостаточно прав' });
+      }
+      req.user = payload;
+      next();
+    } catch {
+      res.status(401).json({ error: 'Недействительный токен' });
+    }
+  };
+}
+
+export async function listUsers(_req, res) {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, login, role, created_at FROM users ORDER BY id',
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
+export async function updateUserRole(req, res) {
+  const { role } = req.body ?? {};
+  if (!['user', 'admin'].includes(role)) {
+    return res.status(400).json({ error: 'Допустимые роли: user, admin' });
+  }
+  try {
+    const { rows } = await pool.query(
+      "UPDATE users SET role = $1 WHERE id = $2 AND role <> 'superadmin' RETURNING id, login, role",
+      [role, req.params.id],
+    );
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Пользователь не найден или это суперадмин' });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
 export async function login(req, res) {
   const { login, password } = req.body ?? {};
   if (typeof login !== 'string' || typeof password !== 'string' || !login || !password) {
@@ -38,14 +92,17 @@ export async function login(req, res) {
   }
   try {
     const { rows } = await pool.query(
-      'SELECT id, login, password_hash FROM users WHERE login = $1',
+      'SELECT id, login, password_hash, role FROM users WHERE login = $1',
       [login.trim()],
     );
     const user = rows[0];
     if (!user || !user.password_hash || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
     }
-    res.json({ token: signToken(user), user: { id: user.id, login: user.login } });
+    res.json({
+      token: signToken(user),
+      user: { id: user.id, login: user.login, role: user.role },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
