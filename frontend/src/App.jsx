@@ -30,6 +30,7 @@ const emptyForm = { login: '', password: '', passwordConfirm: '' }
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('menu') // 'menu' | 'about' | 'contacts'
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user')
     return saved ? JSON.parse(saved) : null
@@ -84,9 +85,31 @@ function App() {
     <>
       <header className="w-full bg-[#213659] border-b border-[#1a2b4a]">
         <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between px-4">
-          <span className="text-lg font-semibold text-white">
-            Столовая Минского центра УВД
-          </span>
+          <div className="flex items-center gap-6">
+            <span className="text-lg font-semibold text-white">
+              Столовая Минского центра УВД
+            </span>
+            <nav className="flex items-center gap-1">
+              {[
+                { id: 'menu', label: 'Меню' },
+                { id: 'about', label: 'О нас' },
+                { id: 'contacts', label: 'Контакты' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+                    activeTab === tab.id
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
           <div className="flex items-center gap-2.5">
             <button
               type="button"
@@ -132,6 +155,23 @@ function App() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
+        {activeTab === 'menu' && null}
+        {activeTab === 'about' && (
+          <section>
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900">О нас</h1>
+            <p className="text-sm text-gray-600">
+              Столовая Минского центра УВД — раздел в разработке.
+            </p>
+          </section>
+        )}
+        {activeTab === 'contacts' && (
+          <section>
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900">Контакты</h1>
+            <p className="text-sm text-gray-600">
+              Контактная информация появится здесь позже.
+            </p>
+          </section>
+        )}
       </main>
 
       {cartOpen && (
