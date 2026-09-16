@@ -81,9 +81,9 @@ function App() {
 
   return (
     <>
-      <header className="w-full bg-gray-200 border-b border-gray-300">
+      <header className="w-full bg-[#213659] border-b border-[#1a2b4a]">
         <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between px-4">
-          <span className="text-lg font-semibold text-gray-900">
+          <span className="text-lg font-semibold text-white">
             Столовая Минского центра УВД
           </span>
           <div className="flex items-center gap-2.5">
@@ -108,7 +108,7 @@ function App() {
             </button>
             {user ? (
               <>
-                <span className="text-sm font-medium text-gray-700">{user.login}</span>
+                <span className="text-sm font-medium text-white">{user.login}</span>
                 <button
                   type="button"
                   onClick={logout}
