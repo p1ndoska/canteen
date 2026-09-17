@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const inputClass =
   'rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-[#a2d9f7] focus:ring-2 focus:ring-[#a2d9f7]/40'
@@ -38,6 +38,36 @@ function App() {
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [users, setUsers] = useState([])
+
+  const isAdmin = !!user && ['admin', 'superadmin'].includes(user.role)
+
+  useEffect(() => {
+    if (activeTab !== 'admin' || user?.role !== 'superadmin') return
+    const token = localStorage.getItem('token')
+    fetch('/api/auth/users', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setUsers)
+      .catch(() => {})
+  }, [activeTab, user])
+
+  const setRole = async (id, role) => {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`/api/auth/users/${id}/role`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ role }),
+    })
+    if (res.ok) {
+      const updated = await res.json()
+      setUsers(users.map((u) => (u.id === id ? { ...u, role: updated.role } : u)))
+    }
+  }
 
   const close = () => {
     setAuthMode(null)
@@ -79,6 +109,7 @@ function App() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
+    if (activeTab === 'admin') setActiveTab('menu')
   }
 
   return (
@@ -94,6 +125,7 @@ function App() {
                 { id: 'menu', label: 'Меню' },
                 { id: 'about', label: 'О нас' },
                 { id: 'contacts', label: 'Контакты' },
+                ...(isAdmin ? [{ id: 'admin', label: 'Админ-панель' }] : []),
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -170,6 +202,48 @@ function App() {
             <p className="text-sm text-gray-600">
               Контактная информация появится здесь позже.
             </p>
+          </section>
+        )}
+        {activeTab === 'admin' && isAdmin && (
+          <section>
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900">Админ-панель</h1>
+            {user?.role === 'superadmin' ? (
+              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 bg-gray-50 text-left text-gray-600">
+                      <th className="px-4 py-2.5 font-medium">ID</th>
+                      <th className="px-4 py-2.5 font-medium">Логин</th>
+                      <th className="px-4 py-2.5 font-medium">Роль</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr key={u.id} className="border-b border-gray-100 last:border-0">
+                        <td className="px-4 py-2.5 text-gray-500">{u.id}</td>
+                        <td className="px-4 py-2.5 text-gray-900">{u.login}</td>
+                        <td className="px-4 py-2.5">
+                          {u.role === 'superadmin' ? (
+                            <span className="text-gray-500">superadmin</span>
+                          ) : (
+                            <select
+                              value={u.role}
+                              onChange={(e) => setRole(u.id, e.target.value)}
+                              className="rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-[#a2d9f7]"
+                            >
+                              <option value="user">user</option>
+                              <option value="admin">admin</option>
+                            </select>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">Раздел в разработке.</p>
+            )}
           </section>
         )}
       </main>
