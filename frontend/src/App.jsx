@@ -39,6 +39,7 @@ function App() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
+  const [adminTab, setAdminTab] = useState('menu') // 'menu' | 'categories' | 'users'
 
   const isAdmin = !!user && ['admin', 'superadmin'].includes(user.role)
 
@@ -207,7 +208,37 @@ function App() {
         {activeTab === 'admin' && isAdmin && (
           <section>
             <h1 className="mb-4 text-2xl font-semibold text-gray-900">Админ-панель</h1>
-            {user?.role === 'superadmin' ? (
+            <div className="mb-5 flex items-center gap-1 border-b border-gray-200">
+              {[
+                { id: 'menu', label: 'Меню' },
+                { id: 'categories', label: 'Категории' },
+                ...(user?.role === 'superadmin'
+                  ? [{ id: 'users', label: 'Пользователи' }]
+                  : []),
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setAdminTab(tab.id)}
+                  className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium transition ${
+                    adminTab === tab.id
+                      ? 'border-[#a2d9f7] text-[#0c4a6e]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {adminTab === 'menu' && (
+              <p className="text-sm text-gray-600">Управление меню — раздел в разработке.</p>
+            )}
+            {adminTab === 'categories' && (
+              <p className="text-sm text-gray-600">
+                Управление категориями — раздел в разработке.
+              </p>
+            )}
+            {adminTab === 'users' && user?.role === 'superadmin' && (
               <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
                 <table className="w-full text-sm">
                   <thead>
@@ -241,8 +272,6 @@ function App() {
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <p className="text-sm text-gray-600">Раздел в разработке.</p>
             )}
           </section>
         )}
