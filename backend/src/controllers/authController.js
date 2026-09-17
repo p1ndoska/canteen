@@ -65,20 +65,89 @@ export async function listUsers(_req, res) {
   }
 }
 
-export async function updateUserRole(req, res) {
-  const { role } = req.body ?? {};
+export async function createUser(req, res) {
+  const { login, password, role } = req.body ?? {};
+  if (typeof login !== 'string' || !login.trim() || typeof password !== 'string' || password.length < 6) {
+    return res
+      .status(400)
+      .json({ error: 'Логин обязателен, пароль — минимум 6 символов' });
+  }
   if (!['user', 'admin'].includes(role)) {
     return res.status(400).json({ error: 'Допустимые роли: user, admin' });
   }
   try {
+    const passwordHash = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
-      "UPDATE users SET role = $1 WHERE id = $2 AND role <> 'superadmin' RETURNING id, login, role",
-      [role, req.params.id],
+      'INSERT INTO users (login, password_hash, role) VALUES ($1, $2, $3) RETURNING id, login, role',
+      [login.trim(), passwordHash, role],
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Такой логин уже занят' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
+export async function updateUser(req, res) {
+  const { login, password, role } = req.body ?? {};
+  const updates = [];
+  const values = [];
+  if (login !== undefined) {
+    if (typeof login !== 'string' || !login.trim()) {
+      return res.status(400).json({ error: 'Логин не может быть пустым' });
+    }
+    values.push(login.trim());
+    updates.push(`login = $${values.length}`);
+  }
+  if (password !== undefined && password !== '') {
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'Пароль — минимум 6 символов' });
+    }
+    values.push(await bcrypt.hash(password, 10));
+    updates.push(`password_hash = $${values.length}`);
+  }
+  if (role !== undefined) {
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ error: 'Допустимые роли: user, admin' });
+    }
+    values.push(role);
+    updates.push(`role = $${values.length}`);
+  }
+  if (!updates.length) {
+    return res.status(400).json({ error: 'Нечего обновлять' });
+  }
+  values.push(req.params.id);
+  try {
+    const { rows } = await pool.query(
+      `UPDATE users SET ${updates.join(', ')} WHERE id = $${values.length} AND role <> 'superadmin' RETURNING id, login, role`,
+      values,
     );
     if (!rows[0]) {
       return res.status(404).json({ error: 'Пользователь не найден или это суперадмин' });
     }
     res.json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Такой логин уже занят' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
+export async function deleteUser(req, res) {
+  try {
+    const { rows } = await pool.query(
+      "DELETE FROM users WHERE id = $1 AND role <> 'superadmin' RETURNING id",
+      [req.params.id],
+    );
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Пользователь не найден или это суперадмин' });
+    }
+    res.status(204).end();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
