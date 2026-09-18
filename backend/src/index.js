@@ -1,27 +1,16 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import pg from 'pg';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-
-const { Pool } = pg;
+import { pool } from './db.js';
+import authRoutes from './routes/authRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
-const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-me';
-
-const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    'postgres://postgres:postgres@localhost:5433/canteen',
-});
 
 app.use(cors());
 app.use(express.json());
-
-const signToken = (user) =>
-  jwt.sign({ sub: user.id, login: user.login }, jwtSecret, { expiresIn: '7d' });
 
 app.get('/api/health', async (_req, res) => {
   try {
@@ -32,60 +21,41 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-app.post('/api/auth/register', async (req, res) => {
-  const { login, password } = req.body ?? {};
-  if (typeof login !== 'string' || typeof password !== 'string' || !login.trim() || password.length < 6) {
-    return res
-      .status(400)
-      .json({ error: 'Логин обязателен, пароль — минимум 6 символов' });
-  }
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    const { rows } = await pool.query(
-      'INSERT INTO users (login, password_hash) VALUES ($1, $2) RETURNING id, login',
-      [login.trim(), passwordHash],
-    );
-    const user = rows[0];
-    res.status(201).json({ token: signToken(user), user });
-  } catch (err) {
-    if (err.code === '23505') {
-      return res.status(409).json({ error: 'Такой логин уже занят' });
-    }
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
-});
-
-app.post('/api/auth/login', async (req, res) => {
-  const { login, password } = req.body ?? {};
-  if (typeof login !== 'string' || typeof password !== 'string' || !login || !password) {
-    return res.status(400).json({ error: 'Введите логин и пароль' });
-  }
-  try {
-    const { rows } = await pool.query(
-      'SELECT id, login, password_hash FROM users WHERE login = $1',
-      [login.trim()],
-    );
-    const user = rows[0];
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-      return res.status(401).json({ error: 'Неверный логин или пароль' });
-    }
-    res.json({ token: signToken(user), user: { id: user.id, login: user.login } });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
-});
+app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
 
 async function init() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       login TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
+      password_hash TEXT,
+      role TEXT NOT NULL DEFAULT 'user',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+  await pool.query(
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'",
+  );
+  // Убираем схему телефонного входа, если она была применена
+  await pool.query('DROP TABLE IF EXISTS otp_codes');
+  await pool.query('ALTER TABLE users DROP COLUMN IF EXISTS phone');
+
+  const superadminLogin = (process.env.SUPERADMIN_LOGIN || 'admin').trim();
+  const superadminPassword = process.env.SUPERADMIN_PASSWORD || 'admin123';
+  const passwordHash = await bcrypt.hash(superadminPassword, 10);
+  await pool.query(
+    "INSERT INTO users (login, password_hash, role) VALUES ($1, $2, 'superadmin') ON CONFLICT (login) DO NOTHING",
+    [superadminLogin, passwordHash],
+  );
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+  console.log(`Superadmin account ready (login: ${superadminLogin})`);
   app.listen(port, () => {
     console.log(`Backend listening on http://localhost:${port}`);
   });
