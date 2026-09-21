@@ -27,6 +27,9 @@ async function apiPost(path, body) {
 
 const emptyForm = { login: '', password: '', passwordConfirm: '' }
 
+const formatPrice = (p) =>
+  `${Number(p).toFixed(2).replace('.', ',')} руб.`
+
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
@@ -45,7 +48,7 @@ function App() {
   const [dishes, setDishes] = useState([])
   const [menuDishes, setMenuDishes] = useState([])
   const [dishDetail, setDishDetail] = useState(null)
-  const [dishForm, setDishForm] = useState(null) // null | {id?, name, image_url, weight, category_id}
+  const [dishForm, setDishForm] = useState(null) // null | {id?, name, image, image_url, weight, price, category_id}
   const [dishFormError, setDishFormError] = useState('')
   const [adminTab, setAdminTab] = useState('menu') // 'menu' | 'categories' | 'users'
 
@@ -177,6 +180,7 @@ function App() {
       const body = new FormData()
       body.append('name', dishForm.name)
       body.append('weight', dishForm.weight)
+      body.append('price', dishForm.price)
       body.append('category_id', dishForm.category_id)
       if (dishForm.image) body.append('image', dishForm.image)
       if (dishForm.id) {
@@ -342,27 +346,28 @@ function App() {
                     key={d.id}
                     type="button"
                     onClick={() => setDishDetail(d)}
-                    className="overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition hover:shadow-md"
+                    className="flex flex-col items-center rounded-xl bg-white p-4 text-center transition hover:shadow-md"
                   >
                     {d.image_url ? (
                       <img
                         src={d.image_url}
                         alt={d.name}
-                        className="h-36 w-full object-cover"
+                        className="h-40 w-full rounded-lg object-contain"
                       />
                     ) : (
-                      <div className="flex h-36 w-full items-center justify-center bg-gray-100 text-gray-300">
-                        <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <div className="flex h-40 w-full items-center justify-center text-gray-300">
+                        <svg className="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="3" width="18" height="18" rx="2" />
                           <circle cx="9" cy="9" r="2" />
                           <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                         </svg>
                       </div>
                     )}
-                    <div className="p-3">
-                      <p className="text-sm font-medium text-gray-900">{d.name}</p>
-                      <p className="mt-0.5 text-xs text-gray-500">{d.weight}</p>
-                    </div>
+                    <p className="mt-3 text-sm font-semibold text-gray-900">{d.name}</p>
+                    <p className="mt-0.5 text-xs text-gray-500">{d.weight}</p>
+                    <span className="mt-2.5 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
+                      {formatPrice(d.price)}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -415,7 +420,7 @@ function App() {
                 <div className="mb-3 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
+                    onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', price: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
                     className="rounded-full bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
                   >
                     + Добавить блюдо
@@ -431,6 +436,7 @@ function App() {
                           <th className="px-4 py-2.5 font-medium" />
                           <th className="px-4 py-2.5 font-medium">Название</th>
                           <th className="px-4 py-2.5 font-medium">Вес</th>
+                          <th className="px-4 py-2.5 font-medium">Цена</th>
                           <th className="px-4 py-2.5 font-medium">Категория</th>
                           <th className="px-4 py-2.5 font-medium" />
                         </tr>
@@ -451,12 +457,13 @@ function App() {
                             </td>
                             <td className="px-4 py-2.5 text-gray-900">{d.name}</td>
                             <td className="px-4 py-2.5 text-gray-700">{d.weight}</td>
+                            <td className="px-4 py-2.5 text-gray-700">{formatPrice(d.price)}</td>
                             <td className="px-4 py-2.5 text-gray-700">{d.category_name}</td>
                             <td className="px-4 py-2.5 text-right">
                               <div className="flex justify-end gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, category_id: d.category_id }); setDishFormError('') }}
+                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, price: d.price, category_id: d.category_id }); setDishFormError('') }}
                                   className="rounded-full border border-[#a2d9f7] bg-white px-3 py-1 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95"
                                 >
                                   Изменить
@@ -773,6 +780,9 @@ function App() {
                   <p className="mt-1 text-sm text-gray-500">
                     {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
                   </p>
+                  <span className="mt-3 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
+                    {formatPrice(dishDetail.price)}
+                  </span>
                 </div>
                 <button
                   type="button"
@@ -854,6 +864,17 @@ function App() {
                 placeholder="250 г"
                 value={dishForm.weight}
                 onChange={(e) => setDishForm({ ...dishForm, weight: e.target.value })}
+                autoComplete="off"
+              />
+              <Field
+                label="Цена"
+                type="number"
+                name="dishPrice"
+                min="0"
+                step="0.01"
+                placeholder="45.90"
+                value={dishForm.price}
+                onChange={(e) => setDishForm({ ...dishForm, price: e.target.value })}
                 autoComplete="off"
               />
               <label className="flex flex-col gap-1.5">
