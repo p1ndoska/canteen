@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { pool } from './db.js';
 import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import dishRoutes from './routes/dishRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.get('/api/health', async (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/dishes', dishRoutes);
 
 async function init() {
   await pool.query(`
@@ -52,6 +54,16 @@ async function init() {
     CREATE TABLE IF NOT EXISTS categories (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS dishes (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      image_url TEXT NOT NULL DEFAULT '',
+      weight TEXT NOT NULL,
+      category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
