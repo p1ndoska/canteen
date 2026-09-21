@@ -78,10 +78,11 @@ function App() {
 
   const authFetch = async (path, options = {}) => {
     const token = localStorage.getItem('token')
+    const isFormData = options.body instanceof FormData
     const res = await fetch(path, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         Authorization: `Bearer ${token}`,
         ...(options.headers || {}),
       },
@@ -163,16 +164,15 @@ function App() {
     e.preventDefault()
     setDishFormError('')
     try {
-      const body = {
-        name: dishForm.name,
-        image_url: dishForm.image_url,
-        weight: dishForm.weight,
-        category_id: Number(dishForm.category_id),
-      }
+      const body = new FormData()
+      body.append('name', dishForm.name)
+      body.append('weight', dishForm.weight)
+      body.append('category_id', dishForm.category_id)
+      if (dishForm.image) body.append('image', dishForm.image)
       if (dishForm.id) {
         const updated = await authFetch(`/api/dishes/${dishForm.id}`, {
           method: 'PATCH',
-          body: JSON.stringify(body),
+          body,
         })
         setDishes(dishes.map((d) => (d.id === dishForm.id
           ? { ...updated, category_name: categories.find((c) => c.id === updated.category_id)?.name }
@@ -180,7 +180,7 @@ function App() {
       } else {
         const created = await authFetch('/api/dishes', {
           method: 'POST',
-          body: JSON.stringify(body),
+          body,
         })
         setDishes([...dishes, {
           ...created,
@@ -368,7 +368,7 @@ function App() {
                 <div className="mb-3 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => { setDishForm({ name: '', image_url: '', weight: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
+                    onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
                     className="rounded-full bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
                   >
                     + Добавить блюдо
@@ -409,7 +409,7 @@ function App() {
                               <div className="flex justify-end gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image_url: d.image_url, weight: d.weight, category_id: d.category_id }); setDishFormError('') }}
+                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, category_id: d.category_id }); setDishFormError('') }}
                                   className="rounded-full border border-[#a2d9f7] bg-white px-3 py-1 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95"
                                 >
                                   Изменить
@@ -735,16 +735,23 @@ function App() {
                 onChange={(e) => setDishForm({ ...dishForm, name: e.target.value })}
                 autoComplete="off"
               />
-              <Field
-                label="Картинка (ссылка)"
-                type="url"
-                name="dishImage"
-                required={false}
-                placeholder="https://…"
-                value={dishForm.image_url}
-                onChange={(e) => setDishForm({ ...dishForm, image_url: e.target.value })}
-                autoComplete="off"
-              />
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-medium text-gray-700">Картинка</span>
+                {(dishForm.image || dishForm.image_url) && (
+                  <img
+                    src={dishForm.image ? URL.createObjectURL(dishForm.image) : dishForm.image_url}
+                    alt=""
+                    className="h-20 w-20 rounded-md object-cover"
+                  />
+                )}
+                <input
+                  type="file"
+                  name="dishImage"
+                  accept="image/*"
+                  onChange={(e) => setDishForm({ ...dishForm, image: e.target.files[0] || null })}
+                  className="text-sm text-gray-600 file:mr-3 file:rounded-full file:border-0 file:bg-[#a2d9f7] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#0c4a6e] file:transition hover:file:brightness-95"
+                />
+              </label>
               <Field
                 label="Вес"
                 type="text"

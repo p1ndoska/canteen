@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import { pool } from './db.js';
+import { uploadDir } from './upload.js';
 import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import dishRoutes from './routes/dishRoutes.js';
@@ -25,6 +26,7 @@ app.get('/api/health', async (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/dishes', dishRoutes);
+app.use('/uploads', express.static(uploadDir));
 
 async function init() {
   await pool.query(`
