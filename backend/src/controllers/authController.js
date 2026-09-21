@@ -6,7 +6,7 @@ const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-me';
 
 const signToken = (user) =>
   jwt.sign({ sub: user.id, login: user.login, role: user.role }, jwtSecret, {
-    expiresIn: '7d',
+    expiresIn: '30m',
   });
 
 export async function register(req, res) {
