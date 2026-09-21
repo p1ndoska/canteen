@@ -816,18 +816,18 @@ function App() {
           onClick={() => setDishDetail(null)}
         >
           <div
-            className="grid w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-xl md:grid-cols-2"
+            className="grid w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-xl md:grid-cols-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-center p-8">
+            <div className="flex items-center justify-center p-10">
               {dishDetail.image_url ? (
                 <img
                   src={dishDetail.image_url}
                   alt={dishDetail.name}
-                  className="max-h-80 w-full object-contain"
+                  className="max-h-96 w-full object-contain"
                 />
               ) : (
-                <div className="flex h-80 w-full items-center justify-center text-gray-300">
+                <div className="flex h-96 w-full items-center justify-center text-gray-300">
                   <svg className="h-14 w-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <circle cx="9" cy="9" r="2" />
@@ -836,23 +836,23 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="relative flex flex-col p-6">
+            <div className="relative flex flex-col p-8">
               <button
                 type="button"
                 onClick={() => setDishDetail(null)}
-                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
                 aria-label="Закрыть"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
-              <h2 className="pr-10 text-xl font-semibold text-gray-900">{dishDetail.name}</h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <h2 className="pr-12 text-2xl font-semibold text-gray-900">{dishDetail.name}</h2>
+              <p className="mt-2 text-sm text-gray-500">
                 {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
               </p>
               {dishDetail.description && (
-                <p className="mt-4 whitespace-pre-line break-words text-sm text-gray-700">
+                <p className="mt-5 whitespace-pre-line break-words text-base text-gray-700">
                   {dishDetail.description}
                 </p>
               )}
@@ -860,7 +860,7 @@ function App() {
               <button
                 type="button"
                 onClick={() => addToCart(dishDetail)}
-                className="mt-6 w-full rounded-full bg-[#a2d9f7] px-4 py-3 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+                className="mt-8 w-full rounded-full bg-[#a2d9f7] px-4 py-3.5 text-base font-semibold text-[#0c4a6e] transition hover:brightness-95"
               >
                 В корзину за {formatPrice(dishDetail.price)}
               </button>
