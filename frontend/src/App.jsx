@@ -33,6 +33,7 @@ const formatPrice = (p) =>
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
+  const [cartItems, setCartItems] = useState([])
   const [activeTab, setActiveTab] = useState('menu') // 'menu' | 'about' | 'contacts'
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user')
@@ -208,6 +209,14 @@ function App() {
     }
   }
 
+  const addToCart = (dish) => {
+    setCartItems([...cartItems, dish])
+    setDishDetail(null)
+    setCartOpen(true)
+  }
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + Number(item.price), 0)
+
   const removeDish = async (d) => {
     if (!window.confirm(`Удалить блюдо «${d.name}»?`)) return
     try {
@@ -311,6 +320,11 @@ function App() {
                 <path d="M9 10V6a3 3 0 0 1 6 0v4" />
               </svg>
               Корзина
+              {cartItems.length > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0c4a6e] px-1 text-xs font-bold text-white">
+                  {cartItems.length}
+                </span>
+              )}
             </button>
             {user ? (
               <>
@@ -618,9 +632,56 @@ function App() {
                 </svg>
               </button>
             </div>
-            <div className="flex flex-1 items-center justify-center p-6">
-              <p className="text-sm text-gray-500">Корзина пуста</p>
+            <div className="flex-1 overflow-y-auto p-5">
+              {cartItems.length === 0 ? (
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-sm text-gray-500">Корзина пуста</p>
+                </div>
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  {cartItems.map((item, i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="h-12 w-12 rounded-md object-cover"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-md bg-gray-100" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-gray-900">{item.name}</p>
+                        <p className="text-xs text-gray-500">{item.weight}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatPrice(item.price)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setCartItems(cartItems.filter((_, idx) => idx !== i))}
+                        className="text-gray-400 transition hover:text-gray-600"
+                        aria-label="Убрать"
+                      >
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                          <path d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+            {cartItems.length > 0 && (
+              <div className="border-t border-gray-200 p-5">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Итого</span>
+                  <span className="text-base font-semibold text-gray-900">
+                    {formatPrice(cartTotal)}
+                  </span>
+                </div>
+              </div>
+            )}
           </aside>
         </div>
       )}
@@ -755,51 +816,54 @@ function App() {
           onClick={() => setDishDetail(null)}
         >
           <div
-            className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl"
+            className="grid w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-xl md:grid-cols-2"
             onClick={(e) => e.stopPropagation()}
           >
-            {dishDetail.image_url ? (
-              <img
-                src={dishDetail.image_url}
-                alt={dishDetail.name}
-                className="h-56 w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-56 w-full items-center justify-center bg-gray-100 text-gray-300">
-                <svg className="h-14 w-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
-              </div>
-            )}
-            <div className="p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="text-lg font-semibold text-gray-900">{dishDetail.name}</h2>
-                  <p className="mt-1 text-sm text-gray-500">
-                    {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
-                  </p>
-                  <span className="mt-3 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
-                    {formatPrice(dishDetail.price)}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDishDetail(null)}
-                  className="text-gray-400 transition hover:text-gray-600"
-                  aria-label="Закрыть"
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M6 6l12 12M18 6L6 18" />
+            <div className="flex items-center justify-center p-8">
+              {dishDetail.image_url ? (
+                <img
+                  src={dishDetail.image_url}
+                  alt={dishDetail.name}
+                  className="max-h-80 w-full object-contain"
+                />
+              ) : (
+                <div className="flex h-80 w-full items-center justify-center text-gray-300">
+                  <svg className="h-14 w-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="9" cy="9" r="2" />
+                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                   </svg>
-                </button>
-              </div>
+                </div>
+              )}
+            </div>
+            <div className="relative flex flex-col p-6">
+              <button
+                type="button"
+                onClick={() => setDishDetail(null)}
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                aria-label="Закрыть"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+              <h2 className="pr-10 text-xl font-semibold text-gray-900">{dishDetail.name}</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
+              </p>
               {dishDetail.description && (
-                <p className="mt-3 whitespace-pre-line break-words text-sm text-gray-700">
+                <p className="mt-4 whitespace-pre-line break-words text-sm text-gray-700">
                   {dishDetail.description}
                 </p>
               )}
+              <div className="flex-1" />
+              <button
+                type="button"
+                onClick={() => addToCart(dishDetail)}
+                className="mt-6 w-full rounded-full bg-[#a2d9f7] px-4 py-3 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+              >
+                В корзину за {formatPrice(dishDetail.price)}
+              </button>
             </div>
           </div>
         </div>
