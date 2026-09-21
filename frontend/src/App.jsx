@@ -43,6 +43,8 @@ function App() {
   const [catForm, setCatForm] = useState(null) // null | {id?, name}
   const [catFormError, setCatFormError] = useState('')
   const [dishes, setDishes] = useState([])
+  const [menuDishes, setMenuDishes] = useState([])
+  const [dishDetail, setDishDetail] = useState(null)
   const [dishForm, setDishForm] = useState(null) // null | {id?, name, image_url, weight, category_id}
   const [dishFormError, setDishFormError] = useState('')
   const [adminTab, setAdminTab] = useState('menu') // 'menu' | 'categories' | 'users'
@@ -71,6 +73,14 @@ function App() {
       .then(setDishes)
       .catch(() => {})
   }, [activeTab, isAdmin])
+
+  useEffect(() => {
+    if (activeTab !== 'menu') return
+    fetch('/api/dishes')
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setMenuDishes)
+      .catch(() => {})
+  }, [activeTab])
 
   const emptyUserForm = { login: '', password: '', role: 'user' }
   const [userForm, setUserForm] = useState(null) // null | {id?, login, password, role}
@@ -321,7 +331,44 @@ function App() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
-        {activeTab === 'menu' && null}
+        {activeTab === 'menu' && (
+          <section>
+            {menuDishes.length === 0 ? (
+              <p className="text-sm text-gray-600">Меню пока пустое.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {menuDishes.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => setDishDetail(d)}
+                    className="overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition hover:shadow-md"
+                  >
+                    {d.image_url ? (
+                      <img
+                        src={d.image_url}
+                        alt={d.name}
+                        className="h-36 w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-36 w-full items-center justify-center bg-gray-100 text-gray-300">
+                        <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="9" cy="9" r="2" />
+                          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="text-sm font-medium text-gray-900">{d.name}</p>
+                      <p className="mt-0.5 text-xs text-gray-500">{d.weight}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
         {activeTab === 'about' && (
           <section>
             <h1 className="mb-4 text-2xl font-semibold text-gray-900">О нас</h1>
@@ -691,6 +738,54 @@ function App() {
                 {catForm.id ? 'Сохранить' : 'Создать'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {dishDetail && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setDishDetail(null)}
+        >
+          <div
+            className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {dishDetail.image_url ? (
+              <img
+                src={dishDetail.image_url}
+                alt={dishDetail.name}
+                className="h-56 w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-56 w-full items-center justify-center bg-gray-100 text-gray-300">
+                <svg className="h-14 w-14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </div>
+            )}
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">{dishDetail.name}</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDishDetail(null)}
+                  className="text-gray-400 transition hover:text-gray-600"
+                  aria-label="Закрыть"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
