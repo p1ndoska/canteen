@@ -14,7 +14,7 @@ const imageUrl = (req) => (req.file ? `/uploads/${req.file.filename}` : '');
 export async function listDishes(_req, res) {
   try {
     const { rows } = await pool.query(
-      `SELECT d.id, d.name, d.image_url, d.weight, d.price, d.category_id, c.name AS category_name
+      `SELECT d.id, d.name, d.image_url, d.weight, d.price, d.description, d.category_id, c.name AS category_name
        FROM dishes d LEFT JOIN categories c ON c.id = d.category_id
        ORDER BY d.id`,
     );
@@ -26,15 +26,15 @@ export async function listDishes(_req, res) {
 }
 
 export async function createDish(req, res) {
-  const { name, weight, category_id, price } = req.body ?? {};
+  const { name, weight, category_id, price, description } = req.body ?? {};
   if (!isValidDish({ name, weight, category_id, price })) {
     return res.status(400).json({ error: 'Заполните название, вес, цену и категорию' });
   }
   try {
     const { rows } = await pool.query(
-      `INSERT INTO dishes (name, image_url, weight, price, category_id) VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, name, image_url, weight, price, category_id`,
-      [name.trim(), imageUrl(req), weight.trim(), Number(price), Number(category_id)],
+      `INSERT INTO dishes (name, image_url, weight, price, description, category_id) VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, name, image_url, weight, price, description, category_id`,
+      [name.trim(), imageUrl(req), weight.trim(), Number(price), (description ?? '').trim(), Number(category_id)],
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -47,7 +47,7 @@ export async function createDish(req, res) {
 }
 
 export async function updateDish(req, res) {
-  const { name, weight, category_id, price } = req.body ?? {};
+  const { name, weight, category_id, price, description } = req.body ?? {};
   if (!isValidDish({ name, weight, category_id, price })) {
     return res.status(400).json({ error: 'Заполните название, вес, цену и категорию' });
   }
@@ -60,9 +60,9 @@ export async function updateDish(req, res) {
       return res.status(404).json({ error: 'Блюдо не найдено' });
     }
     const { rows } = await pool.query(
-      `UPDATE dishes SET name = $1, image_url = $2, weight = $3, price = $4, category_id = $5
-       WHERE id = $6 RETURNING id, name, image_url, weight, price, category_id`,
-      [name.trim(), imageUrl(req) || existing[0].image_url, weight.trim(), Number(price), Number(category_id), req.params.id],
+      `UPDATE dishes SET name = $1, image_url = $2, weight = $3, price = $4, description = $5, category_id = $6
+       WHERE id = $7 RETURNING id, name, image_url, weight, price, description, category_id`,
+      [name.trim(), imageUrl(req) || existing[0].image_url, weight.trim(), Number(price), (description ?? '').trim(), Number(category_id), req.params.id],
     );
     if (!rows[0]) {
       return res.status(404).json({ error: 'Блюдо не найдено' });

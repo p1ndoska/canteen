@@ -181,6 +181,7 @@ function App() {
       body.append('name', dishForm.name)
       body.append('weight', dishForm.weight)
       body.append('price', dishForm.price)
+      body.append('description', dishForm.description)
       body.append('category_id', dishForm.category_id)
       if (dishForm.image) body.append('image', dishForm.image)
       if (dishForm.id) {
@@ -364,7 +365,6 @@ function App() {
                       </div>
                     )}
                     <p className="mt-3 text-sm font-semibold text-gray-900">{d.name}</p>
-                    <p className="mt-0.5 text-xs text-gray-500">{d.weight}</p>
                     <span className="mt-2.5 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
                       {formatPrice(d.price)}
                     </span>
@@ -420,7 +420,7 @@ function App() {
                 <div className="mb-3 flex justify-end">
                   <button
                     type="button"
-                    onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', price: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
+                    onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', price: '', description: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
                     className="rounded-full bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
                   >
                     + Добавить блюдо
@@ -463,7 +463,7 @@ function App() {
                               <div className="flex justify-end gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, price: d.price, category_id: d.category_id }); setDishFormError('') }}
+                                  onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, price: d.price, description: d.description, category_id: d.category_id }); setDishFormError('') }}
                                   className="rounded-full border border-[#a2d9f7] bg-white px-3 py-1 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95"
                                 >
                                   Изменить
@@ -780,6 +780,9 @@ function App() {
                   <p className="mt-1 text-sm text-gray-500">
                     {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
                   </p>
+                  {dishDetail.description && (
+                    <p className="mt-2.5 text-sm text-gray-700">{dishDetail.description}</p>
+                  )}
                   <span className="mt-3 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
                     {formatPrice(dishDetail.price)}
                   </span>
@@ -877,6 +880,16 @@ function App() {
                 onChange={(e) => setDishForm({ ...dishForm, price: e.target.value })}
                 autoComplete="off"
               />
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-medium text-gray-700">Описание</span>
+                <textarea
+                  name="dishDescription"
+                  rows={3}
+                  value={dishForm.description}
+                  onChange={(e) => setDishForm({ ...dishForm, description: e.target.value })}
+                  className={`${inputClass} resize-none`}
+                />
+              </label>
               <label className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-gray-700">Категория</span>
                 <select

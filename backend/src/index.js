@@ -72,6 +72,9 @@ async function init() {
   await pool.query(
     'ALTER TABLE dishes ADD COLUMN IF NOT EXISTS price NUMERIC(10,2) NOT NULL DEFAULT 0',
   );
+  await pool.query(
+    "ALTER TABLE dishes ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT ''",
+  );
   console.log(`Superadmin account ready (login: ${superadminLogin})`);
   app.listen(port, () => {
     console.log(`Backend listening on http://localhost:${port}`);
