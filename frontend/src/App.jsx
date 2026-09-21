@@ -775,14 +775,11 @@ function App() {
             )}
             <div className="p-5">
               <div className="flex items-start justify-between gap-3">
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-lg font-semibold text-gray-900">{dishDetail.name}</h2>
                   <p className="mt-1 text-sm text-gray-500">
                     {dishDetail.category_name && `${dishDetail.category_name} · `}{dishDetail.weight}
                   </p>
-                  {dishDetail.description && (
-                    <p className="mt-2.5 text-sm text-gray-700">{dishDetail.description}</p>
-                  )}
                   <span className="mt-3 inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800">
                     {formatPrice(dishDetail.price)}
                   </span>
@@ -798,6 +795,11 @@ function App() {
                   </svg>
                 </button>
               </div>
+              {dishDetail.description && (
+                <p className="mt-3 whitespace-pre-line break-words text-sm text-gray-700">
+                  {dishDetail.description}
+                </p>
+              )}
             </div>
           </div>
         </div>
