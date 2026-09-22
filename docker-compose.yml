@@ -23,8 +23,12 @@ services:
       PORT: 3000
       DATABASE_URL: postgres://postgres:postgres@db:5432/canteen
       JWT_SECRET: dev-secret-change-me
+      SUPERADMIN_LOGIN: admin
+      SUPERADMIN_PASSWORD: admin123
     ports:
       - "3000:3000"
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -39,3 +43,4 @@ services:
 
 volumes:
   db_data:
+  uploads_data:
