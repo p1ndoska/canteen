@@ -30,7 +30,8 @@ export default function DishesTab({ categories }) {
       const jpeg = new File([blob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' })
       setDishForm((f) => ({ ...f, image: jpeg }))
     } catch {
-      setDishFormError('Не удалось прочитать HEIC-файл')
+      // браузерный конвертер не справился — сервер конвертирует при сохранении
+      setDishForm((f) => ({ ...f, image: file }))
     } finally {
       setImageConverting(false)
     }
@@ -194,6 +195,8 @@ export default function DishesTab({ categories }) {
                 <span className="text-sm font-medium text-gray-700">Картинка</span>
                 {imageConverting ? (
                   <p className="text-sm text-gray-500">Конвертация HEIC…</p>
+                ) : dishForm.image && isHeic(dishForm.image) ? (
+                  <p className="text-sm text-gray-500">HEIC будет конвертирован в JPG при сохранении</p>
                 ) : (
                   (dishForm.image || dishForm.image_url) && (
                     <img

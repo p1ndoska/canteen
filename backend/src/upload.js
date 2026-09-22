@@ -13,10 +13,17 @@ const storage = multer.diskStorage({
   },
 });
 
+const heicExt = /\.(heic|heif)$/i;
+
 export const upload = multer({
   storage,
   limits: { fileSize: 15 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    cb(null, /^image\//.test(file.mimetype));
+    // HEIC с Windows может приходить без image/*-mimetype — смотрим и на расширение
+    if (/^image\//.test(file.mimetype) || heicExt.test(file.originalname)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Можно загружать только изображения'));
+    }
   },
 });

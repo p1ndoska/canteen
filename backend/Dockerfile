@@ -2,6 +2,9 @@ FROM node:22-alpine
 
 WORKDIR /app
 
+# heif-convert — конвертация HEIC-фото в JPEG при загрузке
+RUN apk add --no-cache libheif-tools
+
 COPY package*.json ./
 # TLS-инспекция в корпоративной сети подменяет сертификаты — для сборки отключаем strict-ssl
 RUN npm config set strict-ssl false \
