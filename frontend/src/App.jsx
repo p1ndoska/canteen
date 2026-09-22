@@ -28,11 +28,36 @@ function App() {
       .catch(() => {})
   }, [activeTab])
 
-  const addToCart = (dish) => {
-    setCartItems([...cartItems, dish])
+  const addToCart = (dish, qty = 1) => {
+    setCartItems((items) => {
+      const i = items.findIndex((x) => x.id === dish.id)
+      if (i === -1) {
+        return [...items, {
+          id: dish.id,
+          name: dish.name,
+          image_url: dish.image_url,
+          weight: dish.weight,
+          price: dish.price,
+          qty,
+        }]
+      }
+      return items.map((x, idx) => (idx === i ? { ...x, qty: x.qty + qty } : x))
+    })
+  }
+
+  const addToCartFromDetail = (dish, qty) => {
+    addToCart(dish, qty)
     setDishDetail(null)
     setCartOpen(true)
   }
+
+  const changeCartQty = (index, delta) => {
+    setCartItems((items) =>
+      items.map((it, i) => (i === index ? { ...it, qty: Math.max(1, it.qty + delta) } : it)),
+    )
+  }
+
+  const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0)
 
   const saveSession = (data) => {
     localStorage.setItem('token', data.token)
@@ -55,14 +80,14 @@ function App() {
         onTabChange={setActiveTab}
         isAdmin={isAdmin}
         user={user}
-        cartCount={cartItems.length}
+        cartCount={cartCount}
         onCartOpen={() => setCartOpen(true)}
         onLogin={() => setAuthMode('login')}
         onLogout={logout}
       />
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
         {activeTab === 'menu' && (
-          <MenuPage dishes={menuDishes} onOpenDish={setDishDetail} />
+          <MenuPage dishes={menuDishes} onOpenDish={setDishDetail} onAddToCart={addToCart} />
         )}
         {activeTab === 'about' && (
           <section>
@@ -88,12 +113,14 @@ function App() {
         items={cartItems}
         onClose={() => setCartOpen(false)}
         onRemove={(i) => setCartItems(cartItems.filter((_, idx) => idx !== i))}
+        onQtyChange={changeCartQty}
       />
 
       <DishDetailModal
+        key={dishDetail?.id ?? 'none'}
         dish={dishDetail}
         onClose={() => setDishDetail(null)}
-        onAddToCart={addToCart}
+        onAddToCart={addToCartFromDetail}
       />
 
       {authMode && (

@@ -1,9 +1,9 @@
 import { CloseIcon } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function CartDrawer({ open, items, onClose, onRemove }) {
+export default function CartDrawer({ open, items, onClose, onRemove, onQtyChange }) {
   if (!open) return null
-  const total = items.reduce((sum, item) => sum + Number(item.price), 0)
+  const total = items.reduce((sum, item) => sum + Number(item.price) * item.qty, 0)
 
   return (
     <div
@@ -33,7 +33,7 @@ export default function CartDrawer({ open, items, onClose, onRemove }) {
           ) : (
             <ul className="flex flex-col gap-3">
               {items.map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
+                <li key={item.id} className="flex items-center gap-3">
                   {item.image_url ? (
                     <img
                       src={item.image_url}
@@ -46,9 +46,30 @@ export default function CartDrawer({ open, items, onClose, onRemove }) {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">{item.name}</p>
                     <p className="text-xs text-gray-500">{item.weight}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onQtyChange(i, -1)}
+                        className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 text-sm text-gray-600 transition hover:text-gray-900"
+                        aria-label="Уменьшить количество"
+                      >
+                        −
+                      </button>
+                      <span className="w-5 text-center text-sm font-semibold text-gray-900">
+                        {item.qty}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => onQtyChange(i, 1)}
+                        className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 text-sm text-gray-600 transition hover:text-gray-900"
+                        aria-label="Увеличить количество"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <span className="text-sm font-semibold text-gray-900">
-                    {formatPrice(item.price)}
+                    {formatPrice(item.price * item.qty)}
                   </span>
                   <button
                     type="button"

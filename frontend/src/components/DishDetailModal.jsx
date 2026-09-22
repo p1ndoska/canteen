@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { CloseIcon, ImagePlaceholder } from '../ui'
 import { formatPrice } from '../utils'
 
 export default function DishDetailModal({ dish, onClose, onAddToCart }) {
+  const [qty, setQty] = useState(1)
+
   if (!dish) return null
 
   return (
@@ -45,13 +48,34 @@ export default function DishDetailModal({ dish, onClose, onAddToCart }) {
             </p>
           )}
           <div className="flex-1" />
-          <button
-            type="button"
-            onClick={() => onAddToCart(dish)}
-            className="mt-8 w-full rounded-full bg-[#a2d9f7] px-4 py-3.5 text-base font-semibold text-[#0c4a6e] transition hover:brightness-95"
-          >
-            В корзину за {formatPrice(dish.price)}
-          </button>
+          <div className="mt-8 flex items-center gap-3">
+            <div className="flex items-center rounded-full border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                className="flex h-12 w-11 items-center justify-center text-lg text-gray-600 transition hover:text-gray-900"
+                aria-label="Уменьшить количество"
+              >
+                −
+              </button>
+              <span className="w-8 text-center text-base font-semibold text-gray-900">{qty}</span>
+              <button
+                type="button"
+                onClick={() => setQty((q) => q + 1)}
+                className="flex h-12 w-11 items-center justify-center text-lg text-gray-600 transition hover:text-gray-900"
+                aria-label="Увеличить количество"
+              >
+                +
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => onAddToCart(dish, qty)}
+              className="flex-1 rounded-full bg-[#a2d9f7] px-4 py-3.5 text-base font-semibold text-[#0c4a6e] transition hover:brightness-95"
+            >
+              В корзину за {formatPrice(dish.price * qty)}
+            </button>
+          </div>
         </div>
       </div>
     </div>
