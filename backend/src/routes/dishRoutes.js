@@ -15,7 +15,7 @@ const uploadImage = (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
       const message = err.code === 'LIMIT_FILE_SIZE'
-        ? 'Файл слишком большой (максимум 5 МБ)'
+        ? 'Файл слишком большой (максимум 15 МБ)'
         : 'Не удалось загрузить файл';
       return res.status(413).json({ error: message });
     }
