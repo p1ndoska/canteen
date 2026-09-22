@@ -26,6 +26,7 @@ export default function DishesTab({ categories }) {
       body.append('weight', dishForm.weight)
       body.append('price', dishForm.price)
       body.append('description', dishForm.description)
+      body.append('stock', dishForm.stock)
       body.append('category_id', dishForm.category_id)
       if (dishForm.image) body.append('image', dishForm.image)
       if (dishForm.id) {
@@ -64,7 +65,7 @@ export default function DishesTab({ categories }) {
       <div className="mb-3 flex justify-end">
         <button
           type="button"
-          onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', price: '', description: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
+          onClick={() => { setDishForm({ name: '', image: null, image_url: '', weight: '', price: '', description: '', stock: '', category_id: categories[0]?.id ?? '' }); setDishFormError('') }}
           className="rounded-full bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
         >
           + Добавить блюдо
@@ -81,6 +82,7 @@ export default function DishesTab({ categories }) {
                 <th className="px-4 py-2.5 font-medium">Название</th>
                 <th className="px-4 py-2.5 font-medium">Вес</th>
                 <th className="px-4 py-2.5 font-medium">Цена</th>
+                <th className="px-4 py-2.5 font-medium">Остаток</th>
                 <th className="px-4 py-2.5 font-medium">Категория</th>
                 <th className="px-4 py-2.5 font-medium" />
               </tr>
@@ -102,12 +104,13 @@ export default function DishesTab({ categories }) {
                   <td className="px-4 py-2.5 text-gray-900">{d.name}</td>
                   <td className="px-4 py-2.5 text-gray-700">{d.weight}</td>
                   <td className="px-4 py-2.5 text-gray-700">{formatPrice(d.price)}</td>
+                  <td className="px-4 py-2.5 text-gray-700">{d.stock}</td>
                   <td className="px-4 py-2.5 text-gray-700">{d.category_name}</td>
                   <td className="px-4 py-2.5 text-right">
                     <div className="flex justify-end gap-2">
                       <button
                         type="button"
-                        onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, price: d.price, description: d.description, category_id: d.category_id }); setDishFormError('') }}
+                        onClick={() => { setDishForm({ id: d.id, name: d.name, image: null, image_url: d.image_url, weight: d.weight, price: d.price, description: d.description, stock: d.stock, category_id: d.category_id }); setDishFormError('') }}
                         className="rounded-full border border-[#a2d9f7] bg-white px-3 py-1 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95"
                       >
                         Изменить
@@ -194,6 +197,17 @@ export default function DishesTab({ categories }) {
                 placeholder="45.90"
                 value={dishForm.price}
                 onChange={(e) => setDishForm({ ...dishForm, price: e.target.value })}
+                autoComplete="off"
+              />
+              <Field
+                label="Остаток"
+                type="number"
+                name="dishStock"
+                min="0"
+                step="1"
+                placeholder="10"
+                value={dishForm.stock}
+                onChange={(e) => setDishForm({ ...dishForm, stock: e.target.value })}
                 autoComplete="off"
               />
               <label className="flex flex-col gap-1.5">
