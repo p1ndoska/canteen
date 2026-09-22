@@ -7,6 +7,34 @@ export default function DishesTab({ categories }) {
   const [dishes, setDishes] = useState([])
   const [dishForm, setDishForm] = useState(null) // null | {id?, name, image, image_url, weight, price, description, category_id}
   const [dishFormError, setDishFormError] = useState('')
+  const [imageConverting, setImageConverting] = useState(false)
+
+  const isHeic = (file) =>
+    /image\/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
+
+  const pickImage = async (file) => {
+    if (!file) {
+      setDishForm((f) => ({ ...f, image: null }))
+      return
+    }
+    if (!isHeic(file)) {
+      setDishForm((f) => ({ ...f, image: file }))
+      return
+    }
+    setImageConverting(true)
+    setDishFormError('')
+    try {
+      const { default: heic2any } = await import('heic2any')
+      const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 })
+      const blob = Array.isArray(converted) ? converted[0] : converted
+      const jpeg = new File([blob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' })
+      setDishForm((f) => ({ ...f, image: jpeg }))
+    } catch {
+      setDishFormError('Не удалось прочитать HEIC-файл')
+    } finally {
+      setImageConverting(false)
+    }
+  }
 
   useEffect(() => {
     fetch('/api/dishes')
@@ -164,18 +192,22 @@ export default function DishesTab({ categories }) {
               />
               <label className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-gray-700">Картинка</span>
-                {(dishForm.image || dishForm.image_url) && (
-                  <img
-                    src={dishForm.image ? URL.createObjectURL(dishForm.image) : dishForm.image_url}
-                    alt=""
-                    className="h-20 w-20 rounded-md object-cover"
-                  />
+                {imageConverting ? (
+                  <p className="text-sm text-gray-500">Конвертация HEIC…</p>
+                ) : (
+                  (dishForm.image || dishForm.image_url) && (
+                    <img
+                      src={dishForm.image ? URL.createObjectURL(dishForm.image) : dishForm.image_url}
+                      alt=""
+                      className="h-20 w-20 rounded-md object-cover"
+                    />
+                  )
                 )}
                 <input
                   type="file"
                   name="dishImage"
-                  accept="image/*"
-                  onChange={(e) => setDishForm({ ...dishForm, image: e.target.files[0] || null })}
+                  accept="image/*,.heic,.heif"
+                  onChange={(e) => pickImage(e.target.files[0])}
                   className="text-sm text-gray-600 file:mr-3 file:rounded-full file:border-0 file:bg-[#a2d9f7] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#0c4a6e] file:transition hover:file:brightness-95"
                 />
               </label>
@@ -237,7 +269,8 @@ export default function DishesTab({ categories }) {
               {dishFormError && <p className="text-sm text-red-600">{dishFormError}</p>}
               <button
                 type="submit"
-                className="mt-1 rounded-full bg-[#a2d9f7] px-4 py-2.5 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+                disabled={imageConverting}
+                className="mt-1 rounded-full bg-[#a2d9f7] px-4 py-2.5 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95 disabled:opacity-50"
               >
                 {dishForm.id ? 'Сохранить' : 'Создать'}
               </button>
