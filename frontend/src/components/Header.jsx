@@ -1,6 +1,7 @@
 export default function Header({ activeTab, onTabChange, isAdmin, user, cartCount, onCartOpen, onLogin, onLogout }) {
   const tabs = [
     { id: 'menu', label: 'Меню' },
+    { id: 'favorites', label: 'Избранное' },
     { id: 'about', label: 'О нас' },
     { id: 'contacts', label: 'Контакты' },
     ...(isAdmin ? [{ id: 'admin', label: 'Админ-панель' }] : []),

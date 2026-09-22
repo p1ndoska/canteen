@@ -5,25 +5,36 @@ import DishDetailModal from './components/DishDetailModal'
 import Header from './components/Header'
 import MenuPage from './components/MenuPage'
 import AdminPanel from './components/admin/AdminPanel'
-import { authFetch } from './api'
 
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
-  const [cartItems, setCartItems] = useState([])
-  const [activeTab, setActiveTab] = useState('menu') // 'menu' | 'about' | 'contacts' | 'admin'
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('cart') || '[]')
+    } catch {
+      return []
+    }
+  })
+  const [activeTab, setActiveTab] = useState('menu') // 'menu' | 'favorites' | 'about' | 'contacts' | 'admin'
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user')
     return saved ? JSON.parse(saved) : null
   })
   const [menuDishes, setMenuDishes] = useState([])
   const [dishDetail, setDishDetail] = useState(null)
-  const [favIds, setFavIds] = useState([])
+  const [favIds, setFavIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('favorites') || '[]')
+    } catch {
+      return []
+    }
+  })
 
   const isAdmin = !!user && ['admin', 'superadmin'].includes(user.role)
 
   useEffect(() => {
-    if (activeTab !== 'menu') return
+    if (activeTab !== 'menu' && activeTab !== 'favorites') return
     fetch('/api/dishes')
       .then((res) => (res.ok ? res.json() : []))
       .then(setMenuDishes)
@@ -64,24 +75,17 @@ function App() {
   const cartQtyById = Object.fromEntries(cartItems.map((i) => [i.id, i.qty]))
 
   useEffect(() => {
-    if (!user) {
-      setFavIds([])
-      return
-    }
-    authFetch('/api/favorites')
-      .then((res) => (res.ok ? res.json() : []))
-      .then(setFavIds)
-      .catch(() => {})
-  }, [user])
+    localStorage.setItem('cart', JSON.stringify(cartItems))
+  }, [cartItems])
+
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favIds))
+  }, [favIds])
 
   const toggleFav = (dish) => {
-    if (!user) {
-      setAuthMode('login')
-      return
-    }
-    const has = favIds.includes(dish.id)
-    setFavIds((ids) => (has ? ids.filter((x) => x !== dish.id) : [...ids, dish.id]))
-    authFetch(`/api/favorites/${dish.id}`, { method: has ? 'DELETE' : 'POST' }).catch(() => {})
+    setFavIds((ids) =>
+      ids.includes(dish.id) ? ids.filter((x) => x !== dish.id) : [...ids, dish.id],
+    )
   }
 
   const saveSession = (data) => {
@@ -119,6 +123,17 @@ function App() {
             onQtyChange={setCartQty}
             favIds={favIds}
             onToggleFav={toggleFav}
+          />
+        )}
+        {activeTab === 'favorites' && (
+          <MenuPage
+            dishes={menuDishes.filter((d) => favIds.includes(d.id))}
+            onOpenDish={setDishDetail}
+            cartQtyById={cartQtyById}
+            onQtyChange={setCartQty}
+            favIds={favIds}
+            onToggleFav={toggleFav}
+            emptyText="В избранном пока пусто."
           />
         )}
         {activeTab === 'about' && (

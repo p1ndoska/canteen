@@ -1,11 +1,11 @@
 import { HeartIcon, ImagePlaceholder } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange, favIds = [], onToggleFav }) {
+export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange, favIds = [], onToggleFav, emptyText = 'Меню пока пустое.' }) {
   return (
     <section>
       {dishes.length === 0 ? (
-        <p className="text-sm text-gray-600">Меню пока пустое.</p>
+        <p className="text-sm text-gray-600">{emptyText}</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {dishes.map((d) => {
