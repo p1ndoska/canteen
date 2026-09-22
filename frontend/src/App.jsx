@@ -110,6 +110,7 @@ function App() {
         isAdmin={isAdmin}
         user={user}
         cartCount={cartCount}
+        favCount={favIds.length}
         onCartOpen={() => setCartOpen(true)}
         onLogin={() => setAuthMode('login')}
         onLogout={logout}

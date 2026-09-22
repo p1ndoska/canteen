@@ -1,7 +1,8 @@
-export default function Header({ activeTab, onTabChange, isAdmin, user, cartCount, onCartOpen, onLogin, onLogout }) {
+import { HeartIcon } from '../ui'
+
+export default function Header({ activeTab, onTabChange, isAdmin, user, cartCount, favCount, onCartOpen, onLogin, onLogout }) {
   const tabs = [
     { id: 'menu', label: 'Меню' },
-    { id: 'favorites', label: 'Избранное' },
     { id: 'about', label: 'О нас' },
     { id: 'contacts', label: 'Контакты' },
     ...(isAdmin ? [{ id: 'admin', label: 'Админ-панель' }] : []),
@@ -36,6 +37,21 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           </nav>
         </div>
         <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => onTabChange('favorites')}
+            aria-label="Избранное"
+            className={`relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition ${
+              activeTab === 'favorites' ? 'text-red-500' : 'text-[#0c4a6e] hover:text-red-400'
+            }`}
+          >
+            <HeartIcon filled={activeTab === 'favorites'} />
+            {favCount > 0 && (
+              <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+                {favCount}
+              </span>
+            )}
+          </button>
           <button
             type="button"
             onClick={onCartOpen}
