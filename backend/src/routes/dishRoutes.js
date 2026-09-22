@@ -11,9 +11,21 @@ import { upload } from '../upload.js';
 const router = Router();
 const adminOnly = requireRole('admin', 'superadmin');
 
+const uploadImage = (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      const message = err.code === 'LIMIT_FILE_SIZE'
+        ? 'Файл слишком большой (максимум 5 МБ)'
+        : 'Не удалось загрузить файл';
+      return res.status(413).json({ error: message });
+    }
+    next();
+  });
+};
+
 router.get('/', listDishes);
-router.post('/', adminOnly, upload.single('image'), createDish);
-router.patch('/:id', adminOnly, upload.single('image'), updateDish);
+router.post('/', adminOnly, uploadImage, createDish);
+router.patch('/:id', adminOnly, uploadImage, updateDish);
 router.delete('/:id', adminOnly, deleteDish);
 
 export default router;

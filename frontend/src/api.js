@@ -23,6 +23,8 @@ export async function authFetch(path, options = {}) {
     },
   })
   const data = res.status === 204 ? null : await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data?.error || 'Ошибка сервера')
+  if (!res.ok) {
+    throw new Error(data?.error || (res.status === 413 ? 'Файл слишком большой' : 'Ошибка сервера'))
+  }
   return data
 }
