@@ -10,9 +10,13 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
     <header className="w-full border-b border-[#1a2b4a] bg-[#213659]">
       <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <span className="text-lg font-semibold text-white">
+          <button
+            type="button"
+            onClick={() => onTabChange('menu')}
+            className="text-lg font-semibold text-white transition hover:text-white/80"
+          >
             Столовая Минского центра УВД
-          </span>
+          </button>
           <nav className="flex items-center gap-1">
             {tabs.map((tab) => (
               <button
