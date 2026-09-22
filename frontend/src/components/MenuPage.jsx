@@ -1,7 +1,7 @@
-import { ImagePlaceholder } from '../ui'
+import { HeartIcon, ImagePlaceholder } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange }) {
+export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange, favIds = [], onToggleFav }) {
   return (
     <section>
       {dishes.length === 0 ? (
@@ -10,8 +10,19 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {dishes.map((d) => {
             const qty = cartQtyById[d.id] ?? 0
+            const isFav = favIds.includes(d.id)
             return (
-            <div key={d.id} className="flex flex-col rounded-xl bg-white p-4 text-center transition hover:shadow-md">
+            <div key={d.id} className="relative flex flex-col rounded-xl bg-white p-4 text-center transition hover:shadow-md">
+              <button
+                type="button"
+                onClick={() => onToggleFav(d)}
+                aria-label={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
+                className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow transition ${
+                  isFav ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
+                }`}
+              >
+                <HeartIcon filled={isFav} />
+              </button>
               <button
                 type="button"
                 onClick={() => onOpenDish(d)}

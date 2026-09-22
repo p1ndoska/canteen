@@ -5,6 +5,7 @@ import DishDetailModal from './components/DishDetailModal'
 import Header from './components/Header'
 import MenuPage from './components/MenuPage'
 import AdminPanel from './components/admin/AdminPanel'
+import { authFetch } from './api'
 
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
@@ -17,6 +18,7 @@ function App() {
   })
   const [menuDishes, setMenuDishes] = useState([])
   const [dishDetail, setDishDetail] = useState(null)
+  const [favIds, setFavIds] = useState([])
 
   const isAdmin = !!user && ['admin', 'superadmin'].includes(user.role)
 
@@ -61,6 +63,27 @@ function App() {
   const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0)
   const cartQtyById = Object.fromEntries(cartItems.map((i) => [i.id, i.qty]))
 
+  useEffect(() => {
+    if (!user) {
+      setFavIds([])
+      return
+    }
+    authFetch('/api/favorites')
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setFavIds)
+      .catch(() => {})
+  }, [user])
+
+  const toggleFav = (dish) => {
+    if (!user) {
+      setAuthMode('login')
+      return
+    }
+    const has = favIds.includes(dish.id)
+    setFavIds((ids) => (has ? ids.filter((x) => x !== dish.id) : [...ids, dish.id]))
+    authFetch(`/api/favorites/${dish.id}`, { method: has ? 'DELETE' : 'POST' }).catch(() => {})
+  }
+
   const saveSession = (data) => {
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
@@ -94,6 +117,8 @@ function App() {
             onOpenDish={setDishDetail}
             cartQtyById={cartQtyById}
             onQtyChange={setCartQty}
+            favIds={favIds}
+            onToggleFav={toggleFav}
           />
         )}
         {activeTab === 'about' && (
@@ -128,6 +153,8 @@ function App() {
         dish={dishDetail}
         onClose={() => setDishDetail(null)}
         cartQty={cartQtyById[dishDetail?.id] ?? 0}
+        isFav={dishDetail ? favIds.includes(dishDetail.id) : false}
+        onToggleFav={toggleFav}
         onSave={saveCartFromDetail}
       />
 

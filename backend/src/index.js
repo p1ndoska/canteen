@@ -7,6 +7,7 @@ import { uploadDir } from './upload.js';
 import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import dishRoutes from './routes/dishRoutes.js';
+import favoritesRoutes from './routes/favoritesRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.get('/api/health', async (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/dishes', dishRoutes);
+app.use('/api/favorites', favoritesRoutes);
 app.use('/uploads', express.static(uploadDir));
 
 async function init() {
@@ -78,6 +80,14 @@ async function init() {
   await pool.query(
     'ALTER TABLE dishes ADD COLUMN IF NOT EXISTS stock INTEGER NOT NULL DEFAULT 0',
   );
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS favorites (
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      dish_id INTEGER NOT NULL REFERENCES dishes(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, dish_id)
+    )
+  `);
   console.log(`Superadmin account ready (login: ${superadminLogin})`);
   app.listen(port, () => {
     console.log(`Backend listening on http://localhost:${port}`);

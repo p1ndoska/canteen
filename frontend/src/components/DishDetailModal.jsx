@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { CloseIcon, ImagePlaceholder } from '../ui'
+import { CloseIcon, HeartIcon, ImagePlaceholder } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave }) {
+export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, isFav = false, onToggleFav }) {
   const [qty, setQty] = useState(Math.max(cartQty, 1))
 
   if (!dish) return null
@@ -37,6 +37,16 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave }) 
             aria-label="Закрыть"
           >
             <CloseIcon />
+          </button>
+          <button
+            type="button"
+            onClick={() => onToggleFav(dish)}
+            aria-label={isFav ? 'Убрать из избранного' : 'Добавить в избранное'}
+            className={`absolute right-16 top-5 flex h-9 w-9 items-center justify-center rounded-full transition ${
+              isFav ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
+            }`}
+          >
+            <HeartIcon filled={isFav} />
           </button>
           <h2 className="pr-12 text-2xl font-semibold text-gray-900">{dish.name}</h2>
           <p className="mt-2 text-sm text-gray-500">
