@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { CloseIcon, ImagePlaceholder } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function DishDetailModal({ dish, onClose, onAddToCart }) {
-  const [qty, setQty] = useState(1)
+export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave }) {
+  const [qty, setQty] = useState(Math.max(cartQty, 1))
 
   if (!dish) return null
 
@@ -52,7 +52,7 @@ export default function DishDetailModal({ dish, onClose, onAddToCart }) {
             <div className="flex items-center rounded-full border border-gray-200">
               <button
                 type="button"
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                onClick={() => setQty((q) => Math.max(0, q - 1))}
                 className="flex h-12 w-11 items-center justify-center text-lg text-gray-600 transition hover:text-gray-900"
                 aria-label="Уменьшить количество"
               >
@@ -70,10 +70,12 @@ export default function DishDetailModal({ dish, onClose, onAddToCart }) {
             </div>
             <button
               type="button"
-              onClick={() => onAddToCart(dish, qty)}
+              onClick={() => onSave(dish, qty)}
               className="flex-1 rounded-full bg-[#a2d9f7] px-4 py-3.5 text-base font-semibold text-[#0c4a6e] transition hover:brightness-95"
             >
-              В корзину за {formatPrice(dish.price * qty)}
+              {qty === 0
+                ? 'Убрать из корзины'
+                : `В корзину за ${formatPrice(dish.price * qty)}`}
             </button>
           </div>
         </div>

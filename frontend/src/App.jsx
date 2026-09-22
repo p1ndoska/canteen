@@ -28,9 +28,10 @@ function App() {
       .catch(() => {})
   }, [activeTab])
 
-  const addToCart = (dish, qty = 1) => {
+  const setCartQty = (dish, qty) => {
     setCartItems((items) => {
       const i = items.findIndex((x) => x.id === dish.id)
+      if (qty <= 0) return i === -1 ? items : items.filter((_, idx) => idx !== i)
       if (i === -1) {
         return [...items, {
           id: dish.id,
@@ -41,12 +42,12 @@ function App() {
           qty,
         }]
       }
-      return items.map((x, idx) => (idx === i ? { ...x, qty: x.qty + qty } : x))
+      return items.map((x, idx) => (idx === i ? { ...x, qty } : x))
     })
   }
 
-  const addToCartFromDetail = (dish, qty) => {
-    addToCart(dish, qty)
+  const saveCartFromDetail = (dish, qty) => {
+    setCartQty(dish, qty)
     setDishDetail(null)
     setCartOpen(true)
   }
@@ -58,6 +59,7 @@ function App() {
   }
 
   const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0)
+  const cartQtyById = Object.fromEntries(cartItems.map((i) => [i.id, i.qty]))
 
   const saveSession = (data) => {
     localStorage.setItem('token', data.token)
@@ -87,7 +89,12 @@ function App() {
       />
       <main className="mx-auto w-full max-w-[1200px] px-4 py-6">
         {activeTab === 'menu' && (
-          <MenuPage dishes={menuDishes} onOpenDish={setDishDetail} onAddToCart={addToCart} />
+          <MenuPage
+            dishes={menuDishes}
+            onOpenDish={setDishDetail}
+            cartQtyById={cartQtyById}
+            onQtyChange={setCartQty}
+          />
         )}
         {activeTab === 'about' && (
           <section>
@@ -120,7 +127,8 @@ function App() {
         key={dishDetail?.id ?? 'none'}
         dish={dishDetail}
         onClose={() => setDishDetail(null)}
-        onAddToCart={addToCartFromDetail}
+        cartQty={cartQtyById[dishDetail?.id] ?? 0}
+        onSave={saveCartFromDetail}
       />
 
       {authMode && (
