@@ -13,7 +13,7 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
       onClick={onClose}
     >
       <div
-        className="grid max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-xl md:grid-cols-2"
+        className="grid max-h-[90vh] w-full max-w-5xl overflow-y-auto xl:max-w-6xl rounded-3xl bg-white shadow-xl md:grid-cols-2"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-center p-4 sm:p-10">
@@ -21,7 +21,7 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
             <img
               src={dish.image_url}
               alt={dish.name}
-              className="max-h-56 w-full object-contain sm:max-h-96"
+              className="max-h-56 w-full object-contain sm:max-h-96 xl:max-h-[28rem]"
             />
           ) : (
             <div className="flex h-56 w-full items-center justify-center text-gray-300 sm:h-96">
@@ -48,12 +48,12 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
           >
             <HeartIcon filled={isFav} />
           </button>
-          <h2 className="pr-12 text-2xl font-semibold text-gray-900">{dish.name}</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h2 className="pr-12 text-2xl font-semibold text-gray-900 xl:text-3xl">{dish.name}</h2>
+          <p className="mt-2 text-sm text-gray-500 xl:text-base">
             {dish.category_name && `${dish.category_name} · `}{dish.weight}
           </p>
           {dish.description && (
-            <p className="mt-5 whitespace-pre-line break-words text-base text-gray-700">
+            <p className="mt-5 whitespace-pre-line break-words text-base text-gray-700 xl:text-lg">
               {dish.description}
             </p>
           )}
