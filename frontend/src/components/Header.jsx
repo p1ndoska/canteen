@@ -12,7 +12,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
 
   return (
     <header className="w-full border-b border-[#1a2b4a] bg-[#213659]">
-      <div className="mx-auto flex min-h-14 w-full max-w-[1200px] xl:max-w-[1600px] 2xl:max-w-[1760px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2 min-[1170px]:flex-nowrap min-[1170px]:py-0">
+      <div className="mx-auto flex min-h-14 w-full max-w-[1200px] xl:min-h-24 xl:max-w-[1600px] 2xl:max-w-[1760px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2 min-[1170px]:flex-nowrap min-[1170px]:py-0">
         <button
           type="button"
           onClick={() => onTabChange('menu')}
