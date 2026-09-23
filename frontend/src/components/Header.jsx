@@ -18,7 +18,10 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           onClick={() => onTabChange('menu')}
           className="text-left text-base font-semibold text-white transition hover:text-white/80 sm:text-lg"
         >
-          Столовая Минского центра УВД
+          Столовая Минского
+          <br className="min-[1170px]:hidden" />
+          <span className="hidden min-[1170px]:inline"> </span>
+          центра УВД
         </button>
         <nav className="hidden items-center gap-1 min-[1170px]:ml-6 min-[1170px]:mr-auto min-[1170px]:flex">
           {tabs.map((tab) => (
