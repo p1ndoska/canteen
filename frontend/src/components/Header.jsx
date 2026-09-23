@@ -12,11 +12,11 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
 
   return (
     <header className="w-full border-b border-[#1a2b4a] bg-[#213659]">
-      <div className="mx-auto flex min-h-14 w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2 sm:flex-nowrap sm:py-0">
+      <div className="mx-auto flex min-h-14 w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2 min-[1170px]:flex-nowrap min-[1170px]:py-0">
         <button
           type="button"
           onClick={() => onTabChange('menu')}
-          className="text-base font-semibold text-white transition hover:text-white/80 sm:text-lg"
+          className="text-left text-base font-semibold text-white transition hover:text-white/80 sm:text-lg"
         >
           Столовая Минского центра УВД
         </button>
@@ -36,7 +36,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
             </button>
           ))}
         </nav>
-        <div className="flex items-center gap-2 sm:order-last sm:gap-2.5">
+        <div className="flex w-full items-center justify-between gap-2 min-[1170px]:w-auto min-[1170px]:justify-normal sm:order-last sm:gap-2.5">
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
