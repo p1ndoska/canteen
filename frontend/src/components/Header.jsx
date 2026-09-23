@@ -16,7 +16,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
         <button
           type="button"
           onClick={() => onTabChange('menu')}
-          className="text-left text-base font-semibold text-white transition hover:text-white/80 sm:text-lg"
+          className="w-full text-center text-base font-semibold text-white transition hover:text-white/80 min-[1170px]:w-auto min-[1170px]:text-left sm:text-lg"
         >
           Столовая Минского
           <br className="min-[1170px]:hidden" />
