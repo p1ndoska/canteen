@@ -7,7 +7,7 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange,
       {dishes.length === 0 ? (
         <p className="text-sm text-gray-600">{emptyText}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {dishes.map((d) => {
             const qty = cartQtyById[d.id] ?? 0
             const isFav = favIds.includes(d.id)
