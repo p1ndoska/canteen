@@ -23,6 +23,11 @@ export async function authFetch(path, options = {}) {
     },
   })
   const data = res.status === 204 ? null : await res.json().catch(() => ({}))
+  if (res.status === 401 && (token || localStorage.getItem('user'))) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    window.location.reload()
+  }
   if (!res.ok) {
     throw new Error(data?.error || (res.status === 413 ? 'Файл слишком большой' : 'Ошибка сервера'))
   }

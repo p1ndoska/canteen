@@ -19,8 +19,18 @@ function App() {
   })
   const [activeTab, setActiveTab] = useState('menu') // 'menu' | 'favorites' | 'about' | 'contacts' | 'admin'
   const [user, setUser] = useState(() => {
+    const token = localStorage.getItem('token')
     const saved = localStorage.getItem('user')
-    return saved ? JSON.parse(saved) : null
+    if (!saved || !token) return null
+    try {
+      const { exp } = JSON.parse(atob(token.split('.')[1]))
+      if (exp && exp * 1000 >= Date.now()) return JSON.parse(saved)
+    } catch {
+      // невалидный токен
+    }
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    return null
   })
   const [menuDishes, setMenuDishes] = useState([])
   const [dishDetail, setDishDetail] = useState(null)
