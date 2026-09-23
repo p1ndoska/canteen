@@ -39,10 +39,10 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange,
                   <ImagePlaceholder className="h-12 w-12 xl:h-16 xl:w-16" />
                 </div>
               )}
-              <p className="mt-3 text-sm font-semibold text-gray-900 xl:text-base">{d.name}</p>
+              <p className="mt-3 text-sm font-semibold text-gray-900">{d.name}</p>
               </button>
               <div className="mt-2.5 flex w-full items-center justify-between xl:mt-3.5">
-                <span className="inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800 xl:px-6 xl:py-2.5 xl:text-base">
+                <span className="inline-block rounded-full bg-[#eef2f7] px-4 py-1.5 text-sm font-semibold text-gray-800 xl:px-5 xl:py-2">
                   {formatPrice(d.price)}
                 </span>
                 {qty > 0 ? (
@@ -51,16 +51,16 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange,
                       type="button"
                       onClick={() => onQtyChange(d, qty - 1)}
                       aria-label="Уменьшить количество"
-                      className="flex h-8 w-7 items-center justify-center rounded-full text-base font-bold text-[#0c4a6e] transition hover:bg-gray-100 xl:h-11 xl:w-10 xl:text-lg"
+                      className="flex h-8 w-7 items-center justify-center rounded-full text-sm font-bold text-[#0c4a6e] transition hover:bg-gray-100 xl:h-10 xl:w-9 xl:text-base"
                     >
                       −
                     </button>
-                    <span className="w-5 text-center text-sm font-semibold text-gray-900 xl:w-7 xl:text-base">{qty}</span>
+                    <span className="w-5 text-center text-sm font-semibold text-gray-900 xl:w-6">{qty}</span>
                     <button
                       type="button"
                       onClick={() => onQtyChange(d, qty + 1)}
                       aria-label="Увеличить количество"
-                      className="flex h-8 w-7 items-center justify-center rounded-full text-base font-bold text-[#0c4a6e] transition hover:bg-gray-100 xl:h-11 xl:w-10 xl:text-lg"
+                      className="flex h-8 w-7 items-center justify-center rounded-full text-sm font-bold text-[#0c4a6e] transition hover:bg-gray-100 xl:h-10 xl:w-9 xl:text-base"
                     >
                       +
                     </button>
@@ -70,7 +70,7 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange,
                     type="button"
                     onClick={() => onQtyChange(d, 1)}
                     aria-label="Добавить в корзину"
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#a2d9f7] text-lg font-bold text-[#0c4a6e] shadow transition hover:brightness-95 xl:h-11 xl:w-11 xl:text-xl"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#a2d9f7] text-base font-bold text-[#0c4a6e] shadow transition hover:brightness-95 xl:h-10 xl:w-10 xl:text-lg"
                   >
                     +
                   </button>
