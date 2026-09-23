@@ -34,7 +34,6 @@ function App() {
   const isAdmin = !!user && ['admin', 'superadmin'].includes(user.role)
 
   useEffect(() => {
-    if (activeTab !== 'menu' && activeTab !== 'favorites') return
     fetch('/api/dishes')
       .then((res) => (res.ok ? res.json() : []))
       .then(setMenuDishes)
@@ -73,6 +72,15 @@ function App() {
 
   const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0)
   const cartQtyById = Object.fromEntries(cartItems.map((i) => [i.id, i.qty]))
+
+  // корзина хранит снимок блюда — показываем свежие данные (фото, цена) из меню
+  const dishesById = new Map(menuDishes.map((d) => [d.id, d]))
+  const cartDisplayItems = cartItems.map((it) => {
+    const d = dishesById.get(it.id)
+    return d
+      ? { ...it, name: d.name, image_url: d.image_url, weight: d.weight, price: d.price }
+      : it
+  })
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartItems))
@@ -158,7 +166,7 @@ function App() {
 
       <CartDrawer
         open={cartOpen}
-        items={cartItems}
+        items={cartDisplayItems}
         onClose={() => setCartOpen(false)}
         onRemove={(i) => setCartItems(cartItems.filter((_, idx) => idx !== i))}
         onQtyChange={changeCartQty}
