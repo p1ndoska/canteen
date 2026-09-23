@@ -1,6 +1,8 @@
-import { HeartIcon } from '../ui'
+import { useState } from 'react'
+import { BurgerIcon, CloseIcon, HeartIcon } from '../ui'
 
 export default function Header({ activeTab, onTabChange, isAdmin, user, cartCount, favCount, onCartOpen, onLogin, onLogout }) {
+  const [menuOpen, setMenuOpen] = useState(false)
   const tabs = [
     { id: 'menu', label: 'Меню' },
     { id: 'about', label: 'О нас' },
@@ -18,13 +20,13 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
         >
           Столовая Минского центра УВД
         </button>
-        <nav className="order-last flex w-full items-center gap-1 overflow-x-auto sm:order-none sm:ml-6 sm:mr-auto sm:w-auto">
+        <nav className="hidden items-center gap-1 min-[1170px]:ml-6 min-[1170px]:mr-auto min-[1170px]:flex">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition sm:px-3.5 sm:py-1.5 sm:text-sm ${
+              className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
                 activeTab === tab.id
                   ? 'bg-white/15 text-white'
                   : 'text-white/70 hover:text-white'
@@ -35,6 +37,15 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           ))}
         </nav>
         <div className="flex items-center gap-2 sm:order-last sm:gap-2.5">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Меню"
+            aria-expanded={menuOpen}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#0c4a6e] transition hover:brightness-95 sm:h-10 sm:w-10 min-[1170px]:hidden"
+          >
+            {menuOpen ? <CloseIcon /> : <BurgerIcon />}
+          </button>
           <button
             type="button"
             onClick={() => onTabChange('favorites')}
@@ -97,6 +108,26 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           )}
         </div>
       </div>
+      {menuOpen && (
+        <nav className="border-t border-white/10 px-4 py-2 min-[1170px]:hidden">
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => { onTabChange(tab.id); setMenuOpen(false) }}
+                className={`rounded-lg px-3 py-2.5 text-left text-sm font-medium transition ${
+                  activeTab === tab.id
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   )
 }
