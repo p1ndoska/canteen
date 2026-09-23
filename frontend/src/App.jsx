@@ -124,7 +124,7 @@ function App() {
         onLogin={() => setAuthMode('login')}
         onLogout={logout}
       />
-      <main className="mx-auto w-full max-w-[1200px] px-4 py-6 xl:max-w-[1440px] xl:py-8">
+      <main className="mx-auto w-full max-w-[1200px] px-4 py-6 xl:max-w-[1440px] 2xl:max-w-[1600px] xl:py-8">
         {activeTab === 'menu' && (
           <MenuPage
             dishes={menuDishes}
@@ -148,16 +148,16 @@ function App() {
         )}
         {activeTab === 'about' && (
           <section>
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-3xl">О нас</h1>
-            <p className="text-sm text-gray-600 xl:text-base">
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-4xl">О нас</h1>
+            <p className="text-sm text-gray-600 xl:text-lg">
               Столовая Минского центра УВД — раздел в разработке.
             </p>
           </section>
         )}
         {activeTab === 'contacts' && (
           <section>
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-3xl">Контакты</h1>
-            <p className="text-sm text-gray-600 xl:text-base">
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-4xl">Контакты</h1>
+            <p className="text-sm text-gray-600 xl:text-lg">
               Контактная информация появится здесь позже.
             </p>
           </section>

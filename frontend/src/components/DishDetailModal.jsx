@@ -48,12 +48,12 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
           >
             <HeartIcon filled={isFav} />
           </button>
-          <h2 className="pr-12 text-2xl font-semibold text-gray-900 xl:text-3xl">{dish.name}</h2>
-          <p className="mt-2 text-sm text-gray-500 xl:text-base">
+          <h2 className="pr-12 text-2xl font-semibold text-gray-900 xl:text-4xl">{dish.name}</h2>
+          <p className="mt-2 text-sm text-gray-500 xl:text-lg">
             {dish.category_name && `${dish.category_name} · `}{dish.weight}
           </p>
           {dish.description && (
-            <p className="mt-5 whitespace-pre-line break-words text-base text-gray-700 xl:text-lg">
+            <p className="mt-5 whitespace-pre-line break-words text-base text-gray-700 xl:text-xl">
               {dish.description}
             </p>
           )}

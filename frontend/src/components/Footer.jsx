@@ -1,16 +1,16 @@
 import { ClockIcon, MailIcon, PhoneIcon, PinIcon } from '../ui'
 
-const linkClass = 'text-sm text-white/70 transition hover:text-white xl:text-base'
+const linkClass = 'text-sm text-white/70 transition hover:text-white xl:text-lg'
 
 export default function Footer({ onTabChange }) {
   return (
     <footer className="mt-auto bg-[#213659] text-white">
-      <div className="mx-auto grid w-full max-w-[1200px] gap-10 px-4 py-10 xl:max-w-[1440px] xl:py-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid w-full max-w-[1200px] gap-10 px-4 py-10 xl:max-w-[1440px] 2xl:max-w-[1600px] xl:py-12 sm:grid-cols-2 lg:grid-cols-3">
         <section>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/90 xl:text-base">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/90 xl:text-lg">
             Контакты
           </h3>
-          <ul className="flex flex-col gap-2.5 text-sm text-white/70 xl:text-base">
+          <ul className="flex flex-col gap-2.5 text-sm text-white/70 xl:text-lg">
             <li className="flex items-center gap-2.5">
               <PhoneIcon className="h-4 w-4 shrink-0 text-white/50" />
               +375 (17) 215-40-52
@@ -34,7 +34,7 @@ export default function Footer({ onTabChange }) {
           </ul>
         </section>
         <section>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/90 xl:text-base">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/90 xl:text-lg">
             Полезные ссылки
           </h3>
           <ul className="flex flex-col gap-2.5">
@@ -45,7 +45,7 @@ export default function Footer({ onTabChange }) {
         </section>
       </div>
       <div className="border-t border-white/10 py-4">
-        <p className="text-center text-xs text-white/50 xl:text-sm">
+        <p className="text-center text-xs text-white/50 xl:text-base">
           © 2026 Столовая Минского центра УВД. Все права защищены.
         </p>
       </div>
