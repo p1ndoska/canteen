@@ -148,16 +148,16 @@ function App() {
         )}
         {activeTab === 'about' && (
           <section>
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-4xl">О нас</h1>
-            <p className="text-sm text-gray-600 xl:text-lg">
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-3xl">О нас</h1>
+            <p className="text-sm text-gray-600 xl:text-base">
               Столовая Минского центра УВД — раздел в разработке.
             </p>
           </section>
         )}
         {activeTab === 'contacts' && (
           <section>
-            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-4xl">Контакты</h1>
-            <p className="text-sm text-gray-600 xl:text-lg">
+            <h1 className="mb-4 text-2xl font-semibold text-gray-900 xl:text-3xl">Контакты</h1>
+            <p className="text-sm text-gray-600 xl:text-base">
               Контактная информация появится здесь позже.
             </p>
           </section>
