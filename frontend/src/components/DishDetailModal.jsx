@@ -13,23 +13,23 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
       onClick={onClose}
     >
       <div
-        className="grid w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-xl md:grid-cols-2"
+        className="grid max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-xl md:grid-cols-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-center p-10">
+        <div className="flex items-center justify-center p-4 sm:p-10">
           {dish.image_url ? (
             <img
               src={dish.image_url}
               alt={dish.name}
-              className="max-h-96 w-full object-contain"
+              className="max-h-56 w-full object-contain sm:max-h-96"
             />
           ) : (
-            <div className="flex h-96 w-full items-center justify-center text-gray-300">
+            <div className="flex h-56 w-full items-center justify-center text-gray-300 sm:h-96">
               <ImagePlaceholder />
             </div>
           )}
         </div>
-        <div className="relative flex flex-col p-8">
+        <div className="relative flex flex-col p-5 sm:p-8">
           <button
             type="button"
             onClick={onClose}

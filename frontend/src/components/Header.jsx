@@ -10,38 +10,36 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
 
   return (
     <header className="w-full border-b border-[#1a2b4a] bg-[#213659]">
-      <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <button
-            type="button"
-            onClick={() => onTabChange('menu')}
-            className="text-lg font-semibold text-white transition hover:text-white/80"
-          >
-            Столовая Минского центра УВД
-          </button>
-          <nav className="flex items-center gap-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onTabChange(tab.id)}
-                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
-                  activeTab === tab.id
-                    ? 'bg-white/15 text-white'
-                    : 'text-white/70 hover:text-white'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-        <div className="flex items-center gap-2.5">
+      <div className="mx-auto flex min-h-14 w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2 sm:flex-nowrap sm:py-0">
+        <button
+          type="button"
+          onClick={() => onTabChange('menu')}
+          className="text-base font-semibold text-white transition hover:text-white/80 sm:text-lg"
+        >
+          Столовая Минского центра УВД
+        </button>
+        <nav className="order-last flex w-full items-center gap-1 overflow-x-auto sm:order-none sm:ml-6 sm:mr-auto sm:w-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onTabChange(tab.id)}
+              className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition sm:px-3.5 sm:py-1.5 sm:text-sm ${
+                activeTab === tab.id
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2 sm:order-last sm:gap-2.5">
           <button
             type="button"
             onClick={() => onTabChange('favorites')}
             aria-label="Избранное"
-            className={`relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition ${
+            className={`relative flex h-9 w-9 items-center justify-center rounded-full bg-white transition sm:h-10 sm:w-10 ${
               activeTab === 'favorites' ? 'text-red-500' : 'text-[#0c4a6e] hover:text-red-400'
             }`}
           >
@@ -55,7 +53,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           <button
             type="button"
             onClick={onCartOpen}
-            className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[#a2d9f7] px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+            className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[#a2d9f7] px-3 py-1.5 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95 sm:px-4 sm:py-2 sm:text-sm"
           >
             <svg
               className="h-[18px] w-[18px]"
@@ -70,7 +68,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
               <path d="M6 7h12l1.5 13.5a1 1 0 0 1-1 1.1H5.5a1 1 0 0 1-1-1.1L6 7z" />
               <path d="M9 10V6a3 3 0 0 1 6 0v4" />
             </svg>
-            Корзина
+            <span className="hidden sm:inline">Корзина</span>
             {cartCount > 0 && (
               <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0c4a6e] px-1 text-xs font-bold text-white">
                 {cartCount}
@@ -79,11 +77,11 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           </button>
           {user ? (
             <>
-              <span className="text-sm font-medium text-white">{user.login}</span>
+              <span className="hidden text-sm font-medium text-white sm:inline">{user.login}</span>
               <button
                 type="button"
                 onClick={onLogout}
-                className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+                className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-3 py-1.5 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95 sm:px-4 sm:py-2 sm:text-sm"
               >
                 Выйти
               </button>
@@ -92,7 +90,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
             <button
               type="button"
               onClick={onLogin}
-              className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-4 py-2 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+              className="inline-flex items-center rounded-full border border-[#a2d9f7] bg-white px-3 py-1.5 text-xs font-semibold text-[#0c4a6e] transition hover:brightness-95 sm:px-4 sm:py-2 sm:text-sm"
             >
               Войти
             </button>

@@ -62,7 +62,7 @@ export default function UsersTab() {
           + Добавить пользователя
         </button>
       </div>
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50 text-left text-gray-600">
@@ -106,11 +106,11 @@ export default function UsersTab() {
 
       {userForm && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => setUserForm(null)}
         >
           <div
-            className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
+            className="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5 flex items-center justify-between">
