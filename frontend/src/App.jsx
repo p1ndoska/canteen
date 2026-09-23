@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import AuthModal from './components/AuthModal'
 import CartDrawer from './components/CartDrawer'
 import DishDetailModal from './components/DishDetailModal'
+import Footer from './components/Footer'
 import Header from './components/Header'
 import MenuPage from './components/MenuPage'
 import AdminPanel from './components/admin/AdminPanel'
@@ -111,7 +112,7 @@ function App() {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -190,7 +191,8 @@ function App() {
           onSuccess={saveSession}
         />
       )}
-    </>
+      <Footer onTabChange={setActiveTab} />
+    </div>
   )
 }
 
