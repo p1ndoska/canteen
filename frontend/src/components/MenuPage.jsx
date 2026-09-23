@@ -32,7 +32,7 @@ export default function MenuPage({ dishes, onOpenDish, cartQtyById, onQtyChange,
                 <img
                   src={d.image_url}
                   alt={d.name}
-                  className="h-40 w-full rounded-lg object-contain xl:h-60"
+                  className="h-40 w-full rounded-2xl object-contain xl:h-60"
                 />
               ) : (
                 <div className="flex h-40 w-full items-center justify-center text-gray-300 xl:h-60">

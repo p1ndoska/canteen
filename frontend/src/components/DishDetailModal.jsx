@@ -21,7 +21,7 @@ export default function DishDetailModal({ dish, onClose, cartQty = 0, onSave, is
             <img
               src={dish.image_url}
               alt={dish.name}
-              className="max-h-56 w-full object-contain sm:max-h-96 xl:max-h-[28rem]"
+              className="max-h-56 w-full rounded-2xl object-contain sm:max-h-96 xl:max-h-[28rem]"
             />
           ) : (
             <div className="flex h-56 w-full items-center justify-center text-gray-300 sm:h-96">
