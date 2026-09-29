@@ -34,7 +34,7 @@ export default function OrdersTab() {
           {orders.map((o) => (
             <tr key={o.id} className="border-b border-gray-100 last:border-0">
               <td className="px-4 py-2.5 text-gray-900">{o.id}</td>
-              <td className="px-4 py-2.5 text-gray-900">{o.user_login || '—'}</td>
+              <td className="px-4 py-2.5 text-gray-900">{o.user_login || 'Гость'}</td>
               <td className="px-4 py-2.5 text-gray-700">
                 {o.items.map((i) => `${i.name} ×${i.qty}`).join(', ')}
               </td>

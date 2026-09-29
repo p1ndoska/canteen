@@ -113,10 +113,6 @@ function App() {
   }
 
   const checkout = async () => {
-    if (!user) {
-      setAuthMode('login')
-      return
-    }
     setCheckoutError('')
     setCheckoutBusy(true)
     try {

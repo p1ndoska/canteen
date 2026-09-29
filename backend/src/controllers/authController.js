@@ -33,6 +33,19 @@ export async function register(req, res) {
   }
 }
 
+export function optionalAuth(req, _res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (token) {
+    try {
+      req.user = jwt.verify(token, jwtSecret);
+    } catch {
+      req.user = null;
+    }
+  }
+  next();
+}
+
 export function requireRole(...roles) {
   return (req, res, next) => {
     const header = req.headers.authorization || '';

@@ -25,7 +25,7 @@ export async function createOrder(req, res) {
     const total = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
     const { rows } = await pool.query(
       'INSERT INTO orders (user_id, items, total) VALUES ($1, $2, $3) RETURNING id, total, status, created_at',
-      [req.user.sub, JSON.stringify(orderItems), total],
+      [req.user?.sub ?? null, JSON.stringify(orderItems), total],
     );
     res.status(201).json(rows[0]);
   } catch (err) {
