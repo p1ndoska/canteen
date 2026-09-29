@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import CategoriesTab from './CategoriesTab'
 import DishesTab from './DishesTab'
+import OrdersTab from './OrdersTab'
 import UsersTab from './UsersTab'
 
 export default function AdminPanel({ user }) {
@@ -17,6 +18,7 @@ export default function AdminPanel({ user }) {
   const tabs = [
     { id: 'menu', label: 'Меню' },
     { id: 'categories', label: 'Категории' },
+    { id: 'orders', label: 'Заказы' },
     ...(user?.role === 'superadmin'
       ? [{ id: 'users', label: 'Пользователи' }]
       : []),
@@ -45,6 +47,7 @@ export default function AdminPanel({ user }) {
       {adminTab === 'categories' && (
         <CategoriesTab categories={categories} onCategoriesChange={setCategories} />
       )}
+      {adminTab === 'orders' && <OrdersTab />}
       {adminTab === 'users' && user?.role === 'superadmin' && <UsersTab />}
     </section>
   )

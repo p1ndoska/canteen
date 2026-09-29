@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { authFetch } from './api'
+import { formatPrice } from './utils'
 import AuthModal from './components/AuthModal'
 import CartDrawer from './components/CartDrawer'
 import DishDetailModal from './components/DishDetailModal'
@@ -10,6 +12,9 @@ import AdminPanel from './components/admin/AdminPanel'
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
+  const [checkoutBusy, setCheckoutBusy] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
+  const [orderDone, setOrderDone] = useState(null)
   const [cartItems, setCartItems] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('cart') || '[]')
@@ -107,6 +112,30 @@ function App() {
     )
   }
 
+  const checkout = async () => {
+    if (!user) {
+      setAuthMode('login')
+      return
+    }
+    setCheckoutError('')
+    setCheckoutBusy(true)
+    try {
+      const order = await authFetch('/api/orders', {
+        method: 'POST',
+        body: JSON.stringify({
+          items: cartItems.map((i) => ({ dish_id: i.id, qty: i.qty })),
+        }),
+      })
+      setCartItems([])
+      setCartOpen(false)
+      setOrderDone(order)
+    } catch (err) {
+      setCheckoutError(err.message)
+    } finally {
+      setCheckoutBusy(false)
+    }
+  }
+
   const saveSession = (data) => {
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
@@ -181,6 +210,9 @@ function App() {
         onClose={() => setCartOpen(false)}
         onRemove={(i) => setCartItems(cartItems.filter((_, idx) => idx !== i))}
         onQtyChange={changeCartQty}
+        onCheckout={checkout}
+        checkoutError={checkoutError}
+        checkoutBusy={checkoutBusy}
       />
 
       <DishDetailModal
@@ -192,6 +224,30 @@ function App() {
         onToggleFav={toggleFav}
         onSave={saveCartFromDetail}
       />
+
+      {orderDone && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setOrderDone(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-xl bg-white p-6 text-center shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-gray-900">Заказ оформлен</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Заказ №{orderDone.id} на сумму {formatPrice(orderDone.total)} принят.
+            </p>
+            <button
+              type="button"
+              onClick={() => setOrderDone(null)}
+              className="mt-4 w-full rounded-full bg-[#a2d9f7] px-4 py-2.5 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95"
+            >
+              Понятно
+            </button>
+          </div>
+        </div>
+      )}
 
       {authMode && (
         <AuthModal

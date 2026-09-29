@@ -1,7 +1,7 @@
 import { CloseIcon } from '../ui'
 import { formatPrice } from '../utils'
 
-export default function CartDrawer({ open, items, onClose, onRemove, onQtyChange }) {
+export default function CartDrawer({ open, items, onClose, onRemove, onQtyChange, onCheckout, checkoutError, checkoutBusy }) {
   if (!open) return null
   const total = items.reduce((sum, item) => sum + Number(item.price) * item.qty, 0)
 
@@ -92,6 +92,15 @@ export default function CartDrawer({ open, items, onClose, onRemove, onQtyChange
                 {formatPrice(total)}
               </span>
             </div>
+            {checkoutError && <p className="mt-3 text-sm text-red-600">{checkoutError}</p>}
+            <button
+              type="button"
+              onClick={onCheckout}
+              disabled={checkoutBusy}
+              className="mt-4 w-full rounded-full bg-[#a2d9f7] px-4 py-3 text-sm font-semibold text-[#0c4a6e] transition hover:brightness-95 disabled:opacity-60"
+            >
+              {checkoutBusy ? 'Оформляем…' : 'Оформить заказ'}
+            </button>
           </div>
         )}
       </aside>
