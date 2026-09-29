@@ -6,6 +6,7 @@ const deliveryOptions = [{ value: 'pickup', label: 'Самовывоз' }]
 const paymentOptions = [
   { value: 'cash', label: 'Наличные' },
   { value: 'card', label: 'Карта' },
+  { value: 'oplati', label: 'Оплати' },
 ]
 
 const nowLocal = () => {

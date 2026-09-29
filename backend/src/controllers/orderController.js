@@ -12,7 +12,7 @@ export async function createOrder(req, res) {
   if (delivery_method !== 'pickup') {
     return res.status(400).json({ error: 'Доступен только самовывоз' });
   }
-  if (!['cash', 'card'].includes(payment_method)) {
+  if (!['cash', 'card', 'oplati'].includes(payment_method)) {
     return res.status(400).json({ error: 'Некорректный способ оплаты' });
   }
   const ids = items.map((i) => i.dish_id);

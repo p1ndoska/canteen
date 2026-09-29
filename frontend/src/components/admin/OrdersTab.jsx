@@ -4,7 +4,7 @@ import { formatPrice } from '../../utils'
 
 const statusLabels = { new: 'Новый', done: 'Выдан', cancelled: 'Отменён' }
 const deliveryLabels = { pickup: 'Самовывоз' }
-const paymentLabels = { cash: 'Наличные', card: 'Карта' }
+const paymentLabels = { cash: 'Наличные', card: 'Карта', oplati: 'Оплати' }
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
