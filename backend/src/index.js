@@ -90,6 +90,15 @@ async function init() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+  await pool.query(
+    'ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_time TIMESTAMPTZ',
+  );
+  await pool.query(
+    "ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_method TEXT NOT NULL DEFAULT 'pickup'",
+  );
+  await pool.query(
+    "ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'cash'",
+  );
   console.log(`Superadmin account ready (login: ${superadminLogin})`);
   app.listen(port, () => {
     console.log(`Backend listening on http://localhost:${port}`);

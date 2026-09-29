@@ -3,6 +3,7 @@ import { authFetch } from './api'
 import { formatPrice } from './utils'
 import AuthModal from './components/AuthModal'
 import CartDrawer from './components/CartDrawer'
+import CheckoutModal from './components/CheckoutModal'
 import DishDetailModal from './components/DishDetailModal'
 import Footer from './components/Footer'
 import Header from './components/Header'
@@ -12,6 +13,7 @@ import AdminPanel from './components/admin/AdminPanel'
 function App() {
   const [authMode, setAuthMode] = useState(null) // null | 'login' | 'register'
   const [cartOpen, setCartOpen] = useState(false)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [checkoutBusy, setCheckoutBusy] = useState(false)
   const [checkoutError, setCheckoutError] = useState('')
   const [orderDone, setOrderDone] = useState(null)
@@ -112,7 +114,13 @@ function App() {
     )
   }
 
-  const checkout = async () => {
+  const openCheckout = () => {
+    setCheckoutError('')
+    setCartOpen(false)
+    setCheckoutOpen(true)
+  }
+
+  const submitCheckout = async (details) => {
     setCheckoutError('')
     setCheckoutBusy(true)
     try {
@@ -120,10 +128,11 @@ function App() {
         method: 'POST',
         body: JSON.stringify({
           items: cartItems.map((i) => ({ dish_id: i.id, qty: i.qty })),
+          ...details,
         }),
       })
       setCartItems([])
-      setCartOpen(false)
+      setCheckoutOpen(false)
       setOrderDone(order)
     } catch (err) {
       setCheckoutError(err.message)
@@ -206,10 +215,18 @@ function App() {
         onClose={() => setCartOpen(false)}
         onRemove={(i) => setCartItems(cartItems.filter((_, idx) => idx !== i))}
         onQtyChange={changeCartQty}
-        onCheckout={checkout}
-        checkoutError={checkoutError}
-        checkoutBusy={checkoutBusy}
+        onCheckout={openCheckout}
       />
+
+      {checkoutOpen && (
+        <CheckoutModal
+          total={cartDisplayItems.reduce((sum, i) => sum + Number(i.price) * i.qty, 0)}
+          busy={checkoutBusy}
+          error={checkoutError}
+          onClose={() => setCheckoutOpen(false)}
+          onSubmit={submitCheckout}
+        />
+      )}
 
       <DishDetailModal
         key={dishDetail?.id ?? 'none'}
@@ -233,6 +250,7 @@ function App() {
             <h2 className="text-lg font-semibold text-gray-900">Заказ оформлен</h2>
             <p className="mt-2 text-sm text-gray-600">
               Заказ №{orderDone.id} на сумму {formatPrice(orderDone.total)} принят.
+              Самовывоз: {new Date(orderDone.pickup_time).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}.
             </p>
             <button
               type="button"

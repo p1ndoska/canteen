@@ -3,6 +3,8 @@ import { authFetch } from '../../api'
 import { formatPrice } from '../../utils'
 
 const statusLabels = { new: 'Новый', done: 'Выдан', cancelled: 'Отменён' }
+const deliveryLabels = { pickup: 'Самовывоз' }
+const paymentLabels = { cash: 'Наличные', card: 'Карта' }
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
@@ -25,6 +27,9 @@ export default function OrdersTab() {
             <th className="px-4 py-2.5">№</th>
             <th className="px-4 py-2.5">Пользователь</th>
             <th className="px-4 py-2.5">Позиции</th>
+            <th className="px-4 py-2.5">Время</th>
+            <th className="px-4 py-2.5">Получение</th>
+            <th className="px-4 py-2.5">Оплата</th>
             <th className="px-4 py-2.5">Сумма</th>
             <th className="px-4 py-2.5">Статус</th>
             <th className="px-4 py-2.5">Дата</th>
@@ -38,6 +43,13 @@ export default function OrdersTab() {
               <td className="px-4 py-2.5 text-gray-700">
                 {o.items.map((i) => `${i.name} ×${i.qty}`).join(', ')}
               </td>
+              <td className="px-4 py-2.5 text-gray-700">
+                {o.pickup_time
+                  ? new Date(o.pickup_time).toLocaleString('ru-RU', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })
+                  : '—'}
+              </td>
+              <td className="px-4 py-2.5 text-gray-700">{deliveryLabels[o.delivery_method] || o.delivery_method || '—'}</td>
+              <td className="px-4 py-2.5 text-gray-700">{paymentLabels[o.payment_method] || o.payment_method || '—'}</td>
               <td className="px-4 py-2.5 font-semibold text-gray-900">{formatPrice(o.total)}</td>
               <td className="px-4 py-2.5 text-gray-700">{statusLabels[o.status] || o.status}</td>
               <td className="px-4 py-2.5 text-gray-700">
