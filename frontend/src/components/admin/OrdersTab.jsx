@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from '../../api'
-import { formatPrice } from '../../utils'
+import { formatPrice, inputClass } from '../../utils'
 
 const statusLabels = { new: 'Новый', done: 'Выдан', cancelled: 'Отменён' }
 const deliveryLabels = { pickup: 'Самовывоз' }
@@ -8,6 +8,18 @@ const paymentLabels = { cash: 'Наличные', card: 'Карта', oplati: '�
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
+
+  const changeStatus = async (id, status) => {
+    try {
+      const updated = await authFetch(`/api/orders/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      })
+      setOrders((list) => list.map((o) => (o.id === id ? { ...o, status: updated.status } : o)))
+    } catch {
+      // статус не меняем при ошибке
+    }
+  }
 
   useEffect(() => {
     authFetch('/api/orders')
@@ -51,7 +63,17 @@ export default function OrdersTab() {
               <td className="px-4 py-2.5 text-gray-700">{deliveryLabels[o.delivery_method] || o.delivery_method || '—'}</td>
               <td className="px-4 py-2.5 text-gray-700">{paymentLabels[o.payment_method] || o.payment_method || '—'}</td>
               <td className="px-4 py-2.5 font-semibold text-gray-900">{formatPrice(o.total)}</td>
-              <td className="px-4 py-2.5 text-gray-700">{statusLabels[o.status] || o.status}</td>
+              <td className="px-4 py-2.5">
+                <select
+                  value={o.status}
+                  onChange={(e) => changeStatus(o.id, e.target.value)}
+                  className={inputClass}
+                >
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </td>
               <td className="px-4 py-2.5 text-gray-700">
                 {new Date(o.created_at).toLocaleString('ru-RU')}
               </td>

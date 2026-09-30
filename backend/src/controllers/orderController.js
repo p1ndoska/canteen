@@ -46,6 +46,28 @@ export async function createOrder(req, res) {
   }
 }
 
+const orderStatuses = ['new', 'done', 'cancelled'];
+
+export async function updateOrderStatus(req, res) {
+  const { status } = req.body ?? {};
+  if (!orderStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Некорректный статус' });
+  }
+  try {
+    const { rows } = await pool.query(
+      'UPDATE orders SET status = $1 WHERE id = $2 RETURNING id, status',
+      [status, req.params.id],
+    );
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Заказ не найден' });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
 export async function listOrders(_req, res) {
   try {
     const { rows } = await pool.query(
