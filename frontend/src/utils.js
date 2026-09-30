@@ -3,3 +3,7 @@ export const inputClass =
 
 export const formatPrice = (p) =>
   `${Number(p).toFixed(2).replace('.', ',')} руб.`
+
+export const orderStatusLabels = { new: 'Новый', done: 'Выдан', cancelled: 'Отменён' }
+export const deliveryLabels = { pickup: 'Самовывоз' }
+export const paymentLabels = { cash: 'Наличные', card: 'Карта', oplati: 'Оплати' }

@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from '../../api'
-import { formatPrice, inputClass } from '../../utils'
-
-const statusLabels = { new: 'Новый', done: 'Выдан', cancelled: 'Отменён' }
-const deliveryLabels = { pickup: 'Самовывоз' }
-const paymentLabels = { cash: 'Наличные', card: 'Карта', oplati: 'Оплати' }
+import { deliveryLabels, formatPrice, inputClass, orderStatusLabels, paymentLabels } from '../../utils'
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
@@ -69,7 +65,7 @@ export default function OrdersTab() {
                   onChange={(e) => changeStatus(o.id, e.target.value)}
                   className={inputClass}
                 >
-                  {Object.entries(statusLabels).map(([value, label]) => (
+                  {Object.entries(orderStatusLabels).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>

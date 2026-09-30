@@ -91,7 +91,15 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
           </button>
           {user ? (
             <>
-              <span className="hidden text-sm font-medium text-white sm:inline xl:text-sm">{user.login}</span>
+              <button
+                type="button"
+                onClick={() => onTabChange('account')}
+                className={`hidden text-sm font-medium transition sm:inline xl:text-sm ${
+                  activeTab === 'account' ? 'text-white underline underline-offset-4' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {user.login}
+              </button>
               <button
                 type="button"
                 onClick={onLogout}
@@ -114,7 +122,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, user, cartCoun
       {menuOpen && (
         <nav className="border-t border-white/10 px-4 py-2 min-[1170px]:hidden">
           <div className="mx-auto flex w-full max-w-[1200px] flex-col xl:max-w-[1600px] 2xl:max-w-[1760px]">
-            {tabs.map((tab) => (
+            {[...tabs, ...(user ? [{ id: 'account', label: `Кабинет (${user.login})` }] : [])].map((tab) => (
               <button
                 key={tab.id}
                 type="button"

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from './api'
 import { formatPrice } from './utils'
+import AccountPage from './components/AccountPage'
 import AuthModal from './components/AuthModal'
 import CartDrawer from './components/CartDrawer'
 import CheckoutModal from './components/CheckoutModal'
@@ -152,7 +153,7 @@ function App() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
-    if (activeTab === 'admin') setActiveTab('menu')
+    if (activeTab === 'admin' || activeTab === 'account') setActiveTab('menu')
   }
 
   return (
@@ -207,6 +208,7 @@ function App() {
           </section>
         )}
         {activeTab === 'admin' && isAdmin && <AdminPanel user={user} />}
+        {activeTab === 'account' && user && <AccountPage user={user} />}
       </main>
 
       <CartDrawer

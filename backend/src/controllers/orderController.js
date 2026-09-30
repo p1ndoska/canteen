@@ -68,6 +68,21 @@ export async function updateOrderStatus(req, res) {
   }
 }
 
+export async function listMyOrders(req, res) {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, items, total, status, created_at, pickup_time, delivery_method, payment_method
+       FROM orders WHERE user_id = $1
+       ORDER BY created_at DESC`,
+      [req.user.sub],
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+}
+
 export async function listOrders(_req, res) {
   try {
     const { rows } = await pool.query(
