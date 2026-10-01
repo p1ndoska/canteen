@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from '../../api'
+import OrderDetailModal from '../OrderDetailModal'
 import { deliveryLabels, formatPrice, inputClass, orderStatusLabels, paymentLabels } from '../../utils'
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
+  const [selected, setSelected] = useState(null)
 
   const changeStatus = async (id, status) => {
     try {
@@ -45,7 +47,11 @@ export default function OrdersTab() {
         </thead>
         <tbody>
           {orders.map((o) => (
-            <tr key={o.id} className="border-b border-gray-100 last:border-0">
+            <tr
+              key={o.id}
+              onClick={() => setSelected(o)}
+              className="cursor-pointer border-b border-gray-100 transition last:border-0 hover:bg-gray-50"
+            >
               <td className="px-4 py-2.5 text-gray-900">{o.id}</td>
               <td className="px-4 py-2.5 text-gray-900">{o.user_login || 'Гость'}</td>
               <td className="px-4 py-2.5 text-gray-700">
@@ -62,6 +68,7 @@ export default function OrdersTab() {
               <td className="px-4 py-2.5">
                 <select
                   value={o.status}
+                  onClick={(e) => e.stopPropagation()}
                   onChange={(e) => changeStatus(o.id, e.target.value)}
                   className={inputClass}
                 >
@@ -77,6 +84,7 @@ export default function OrdersTab() {
           ))}
         </tbody>
       </table>
+      <OrderDetailModal order={selected} onClose={() => setSelected(null)} />
     </div>
   )
 }

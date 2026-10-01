@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { authFetch } from '../api'
+import OrderDetailModal from './OrderDetailModal'
 import { formatPrice, orderStatusLabels, paymentLabels } from '../utils'
 
 const roleLabels = { user: 'Пользователь', admin: 'Администратор', superadmin: 'Суперадмин' }
 
 export default function AccountPage({ user }) {
   const [orders, setOrders] = useState(null)
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     authFetch('/api/orders/mine')
@@ -29,7 +31,11 @@ export default function AccountPage({ user }) {
       ) : (
         <div className="flex flex-col gap-3">
           {orders.map((o) => (
-            <div key={o.id} className="rounded-xl border border-gray-200 bg-white p-5">
+            <div
+              key={o.id}
+              onClick={() => setSelected(o)}
+              className="cursor-pointer rounded-xl border border-gray-200 bg-white p-5 transition hover:border-[#a2d9f7] hover:shadow-sm"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-gray-900">Заказ №{o.id}</span>
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -59,6 +65,7 @@ export default function AccountPage({ user }) {
           ))}
         </div>
       )}
+      <OrderDetailModal order={selected} onClose={() => setSelected(null)} />
     </section>
   )
 }
